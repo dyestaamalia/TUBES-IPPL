@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->unsignedBigInteger('parent_id')->nullable()->after('id');
+            if (!Schema::hasColumn('comments', 'parent_id')) {
+                $table->unsignedBigInteger('parent_id')->nullable()->after('id');
+            }
         });
     }
+
 
     /**
      * Reverse the migrations.
@@ -22,7 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->dropColumn('parent_id');
+            if (Schema::hasColumn('comments', 'parent_id')) {
+                $table->dropColumn('parent_id');
+            }
         });
     }
 };

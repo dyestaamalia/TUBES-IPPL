@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\PengingatController;
 
 // ==========================================
 // WELCOME PAGE (Landing Page)
@@ -80,25 +81,6 @@ Route::middleware(['auth'])->group(function () {
     
     // Delete Hewan
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
+
 });
 
-// ==========================================
-// PLACEHOLDER ROUTES (Belum ada controller)
-// ==========================================
-Route::middleware(['auth'])->group(function () {
-    
-    // Riwayat Kesehatan
-    Route::get('/riwayat', function() {
-        return view('placeholder', ['title' => 'Riwayat Kesehatan', 'message' => 'Fitur ini sedang dalam pengembangan']);
-    })->name('riwayat');
-    
-    // Pengingat
-    Route::get('/pengingat', function() {
-        return view('placeholder', ['title' => 'Pengingat', 'message' => 'Fitur ini sedang dalam pengembangan']);
-    })->name('pengingat');
-    
-    // Profil
-    Route::get('/profil', function() {
-        return view('placeholder', ['title' => 'Profil Saya', 'message' => 'Fitur ini sedang dalam pengembangan']);
-    })->name('profil');
-});

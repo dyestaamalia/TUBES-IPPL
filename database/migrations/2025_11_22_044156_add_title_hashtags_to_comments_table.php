@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->string('title')->nullable()->after('content'); // Judul post
-            $table->text('hashtags')->nullable()->after('title'); // Hashtags (comma separated)
+            // Cek dulu kolom 'title'
+            if (!Schema::hasColumn('comments', 'title')) {
+                $table->string('title')->nullable()->after('content'); // Judul post
+            }
+
+            // Cek dulu kolom 'hashtags'
+            if (!Schema::hasColumn('comments', 'hashtags')) {
+                $table->text('hashtags')->nullable()->after('title'); // Hashtags (comma separated)
+            }
         });
     }
 
@@ -23,7 +30,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->dropColumn(['title', 'hashtags']);
+            // Hapus kolom hanya kalau ada
+            if (Schema::hasColumn('comments', 'title')) {
+                $table->dropColumn('title');
+            }
+            if (Schema::hasColumn('comments', 'hashtags')) {
+                $table->dropColumn('hashtags');
+            }
         });
     }
 };

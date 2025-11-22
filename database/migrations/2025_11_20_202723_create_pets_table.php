@@ -13,10 +13,27 @@ return new class extends Migration
     {
         Schema::create('pets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // relasi ke users
+
+            // relasi ke tabel users
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            // basic data
             $table->string('name');
             $table->string('species');
             $table->string('breed')->nullable();
+
+            // tambahan lengkap sesuai form
+            $table->string('gender')->nullable();          // jantan/betina
+            $table->date('birth_date')->nullable();        // tanggal lahir
+            $table->float('weight')->nullable();           // berat
+            $table->text('special_marks')->nullable();     // tanda khusus
+            $table->string('is_steril')->nullable();       // sudah steril?
+            $table->string('allergies')->nullable();       // alergi
+            $table->text('health_notes')->nullable();      // catatan kesehatan
+
+            // foto hewan
+            $table->string('photo')->nullable();
+
             $table->timestamps();
         });
     }

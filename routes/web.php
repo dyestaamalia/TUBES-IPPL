@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
+use App\Http\Controllers\PetController;
 
 // HOME
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -28,3 +29,26 @@ Route::middleware(['auth'])->group(function () {
 
 // FORUM
 Route::get('/forum/{comment}', [ForumController::class, 'show'])->name('forum.show');
+
+// Hewan
+Route::middleware(['auth'])->group(function () {
+
+    // LIST
+    Route::get('/hewan-saya', [PetController::class, 'index'])->name('hewan-saya');
+
+    // CREATE
+    Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
+    Route::post('/pets', [PetController::class, 'store'])->name('pets.store');
+
+    // DETAIL
+    Route::get('/pets/{pet}', [PetController::class, 'show'])->name('pets.show');
+
+    // EDIT
+    Route::get('/pets/{pet}/edit', [PetController::class, 'edit'])->name('pets.edit');
+    Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
+
+    // DELETE
+    Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
+
+});
+

@@ -140,5 +140,8 @@
     });
 </script>
 
+{{-- PENTING: Ini untuk load scripts dari child views --}}
+@stack('scripts')
+
 </body>
 </html>

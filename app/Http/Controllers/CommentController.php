@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CommentController extends Controller
 {
     /**
-     * Simpan post/komentar baru dengan title & hashtags
+     * Simpan post/komentar baru dengan title, hashtags & image
      */
     public function store(Request $request)
     {
@@ -18,6 +19,7 @@ class CommentController extends Controller
             'title' => 'nullable|string|max:100',
             'hashtags' => 'nullable|string|max:255',
             'parent_id' => 'nullable|exists:comments,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
         ]);
 
         // Process hashtags - pastikan format #hashtag
@@ -30,11 +32,18 @@ class CommentController extends Controller
             $hashtags = implode(',', array_filter($tags));
         }
 
+        // Handle image upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('comments', 'public');
+        }
+
         Comment::create([
             'user_id' => Auth::id(),
             'content' => $request->content,
             'title' => $request->title,
             'hashtags' => $hashtags,
+            'image' => $imagePath,
             'parent_id' => $request->parent_id ?? null,
         ]);
 
@@ -50,13 +59,16 @@ class CommentController extends Controller
     /**
      * Like / Unlike komentar
      */
-    public function like($id)  // ← pastikan parameter $id
+    public function like($id)
 {
     try {
+        \Log::info('Like request received for comment: ' . $id);
+        
         $comment = Comment::findOrFail($id);
         $user = auth()->user();
 
         if (!$user) {
+            \Log::error('User not authenticated');
             return response()->json([
                 'success' => false,
                 'error' => 'Unauthorized'
@@ -64,11 +76,21 @@ class CommentController extends Controller
         }
 
         // Toggle like
-        $comment->likes()->toggle($user->id);
+        if ($comment->likes()->where('user_id', $user->id)->exists()) {
+            $comment->likes()->detach($user->id);
+            $isLiked = false;
+        } else {
+            $comment->likes()->attach($user->id);
+            $isLiked = true;
+        }
 
-        // Reload likes
+        // Reload likes count
         $likesCount = $comment->likes()->count();
-        $isLiked = $comment->likes()->where('user_id', $user->id)->exists();
+        
+        \Log::info('Like toggled successfully', [
+            'likes_count' => $likesCount,
+            'is_liked' => $isLiked
+        ]);
 
         return response()->json([
             'success' => true,
@@ -101,8 +123,18 @@ class CommentController extends Controller
             ], 403);
         }
 
+        // Delete image if exists
+        if ($comment->image) {
+            Storage::disk('public')->delete($comment->image);
+        }
+
         // Delete all replies (cascade)
-        $comment->replies()->delete();
+        foreach ($comment->replies as $reply) {
+            if ($reply->image) {
+                Storage::disk('public')->delete($reply->image);
+            }
+            $reply->delete();
+        }
         
         // Delete comment
         $comment->delete();

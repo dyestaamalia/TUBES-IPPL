@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $$table->unsignedBigInteger('parent_id')->nullable()->after('id');
+            $table->string('title')->nullable()->after('content'); // Judul post
+            $table->text('hashtags')->nullable()->after('title'); // Hashtags (comma separated)
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->dropColumn('parent_id');
+            $table->dropColumn(['title', 'hashtags']);
         });
     }
 };

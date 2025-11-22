@@ -6,24 +6,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Di sini kita definisikan semua route untuk Home, Auth, Comment, dan Forum.
-|
-*/
-
-// =======================
-// Home / Dashboard
-// =======================
+// HOME
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 
-// =======================
-// Authentication (Login/Register/Logout)
-// =======================
+// AUTH
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'prosesLogin'])->name('proseslogin');
 
@@ -32,14 +19,12 @@ Route::post('/register', [AuthController::class, 'prosesRegister'])->name('regis
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// =======================
-// Comment
-// =======================
-Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+// COMMENT (Tambahkan middleware auth untuk yang perlu login)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like'); // ← UBAH JADI {id}
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
 
-// =======================
-// Forum
-// =======================
-// Menampilkan parent comment + semua balasan
+// FORUM
 Route::get('/forum/{comment}', [ForumController::class, 'show'])->name('forum.show');

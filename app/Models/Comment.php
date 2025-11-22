@@ -9,38 +9,65 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Comment extends Model
 {
-    protected $fillable = ['user_id', 'content', 'parent_id'];
+    protected $fillable = [
+        'user_id',
+        'content',
+        'title',        // Judul post
+        'hashtags',     // Hashtags (comma separated)
+        'parent_id'
+    ];
 
-    // Relasi ke user (pemilik komentar)
+    /**
+     * User yang membuat komentar/post
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // Alias author supaya Blade bisa pakai $comment->author
+    /**
+     * Alias author (optional)
+     */
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi likes (user yang menyukai komentar)
+    /**
+     * Like sistem pivot: comment_user_likes
+     */
     public function likes(): BelongsToMany
     {
-        // Pivot table: comment_user_likes
-        // comment_id -> foreign key ke Comment
-        // user_id -> foreign key ke User
-        return $this->belongsToMany(User::class, 'comment_user_likes', 'comment_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(
+            User::class,
+            'comment_user_likes',
+            'comment_id',
+            'user_id'
+        )->withTimestamps();
     }
 
-    // Balasan komentar
+    /**
+     * Balasan/replies
+     */
     public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id')->with('user', 'likes', 'replies');
+        return $this->hasMany(Comment::class, 'parent_id')
+                    ->with(['user', 'likes']);
     }
 
-    // Parent komentar
+    /**
+     * Parent comment
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    /**
+     * Get hashtags as array
+     */
+    public function getHashtagsArrayAttribute()
+    {
+        return $this->hashtags ? explode(',', $this->hashtags) : [];
     }
 }

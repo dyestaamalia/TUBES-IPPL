@@ -9,3 +9,12 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+.love-btn {
+    transition: all 0.2s ease;
+}
+.love-btn.scale-110 {
+    transform: scale(1.1);
+}
+.love-btn svg {
+    transition: all 0.2s ease;
+}

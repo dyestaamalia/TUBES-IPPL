@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PetController;
+use App\Http\Controllers\PengingatController;
 
 // HOME
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -51,4 +52,20 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
 
 });
+
+// Pengingat List
+Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
+
+// Tambah Pengingat (form)
+Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
+
+// Simpan Pengingat
+Route::post('/pengingat/store', [PengingatController::class, 'store'])->name('pengingat.store');
+
+// Tandai selesai
+Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
+
+// Delete
+Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
+
 

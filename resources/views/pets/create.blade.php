@@ -99,10 +99,11 @@
 
             <label class="font-medium">Status Steril</label>
             <select name="is_steril" class="w-full p-3 border rounded-xl mt-1">
-                <option value="">Pilih Status</option>
-                <option>Ya</option>
-                <option>Tidak</option>
+                <option value="1">Sudah</option>
+                <option value="0">Belum</option>
             </select>
+
+
 
             <div class="mt-4">
                 <label class="font-medium">Alergi</label>

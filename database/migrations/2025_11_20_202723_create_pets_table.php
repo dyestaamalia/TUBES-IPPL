@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('birth_date')->nullable();        // tanggal lahir
             $table->float('weight')->nullable();           // berat
             $table->text('special_marks')->nullable();     // tanda khusus
-            $table->string('is_steril')->nullable();       // sudah steril?
+            $table->boolean('is_steril')->default(0);      // sudah steril?
             $table->string('allergies')->nullable();       // alergi
             $table->text('health_notes')->nullable();      // catatan kesehatan
 

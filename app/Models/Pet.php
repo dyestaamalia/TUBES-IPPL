@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Pet extends Model
 {
@@ -14,11 +15,51 @@ class Pet extends Model
         'name',
         'species',
         'breed',
-        'photo',
+        'gender',
+        'birth_date',
+        'weight',
+        'special_marks',
+        'is_steril',
+        'allergies',
+        'health_notes',
+        'photo'
+    ];
+
+    protected $casts = [
+        'is_steril' => 'boolean',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Accessor untuk umur
+    public function getAgeAttribute()
+    {
+        if (!$this->birth_date) {
+            return null;
+        }
+
+        $birth = Carbon::parse($this->birth_date);
+        $now = Carbon::now();
+
+        $diff = $birth->diff($now);
+
+        $parts = [];
+
+        if ($diff->y > 0) {
+            $parts[] = $diff->y . ' tahun';
+        }
+
+        if ($diff->m > 0) {
+            $parts[] = $diff->m . ' bulan';
+        }
+
+        if ($diff->d > 0) {
+            $parts[] = $diff->d . ' hari';
+        }
+
+        return implode(' ', $parts);
     }
 }

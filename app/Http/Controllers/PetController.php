@@ -42,14 +42,14 @@ class PetController extends Controller
             'birth_date'    => 'required|date',
             'weight'        => 'nullable|numeric',
             'special_marks' => 'nullable|string',
-            'is_steril'     => 'nullable|string',
+            'is_steril'     => 'required|boolean',
             'allergies'     => 'nullable|string',
             'health_notes'  => 'nullable|string',
-            'photo'         => 'nullable|image|max:5120' // 5MB
+            'photo'         => 'nullable|image|max:5120'
         ]);
 
-        // Upload Foto
         $photoPath = null;
+
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('pets', 'public');
         }
@@ -69,8 +69,7 @@ class PetController extends Controller
             'photo'         => $photoPath,
         ]);
 
-        return redirect()->route('hewan-saya')
-            ->with('success', 'Hewan berhasil ditambahkan!');
+        return redirect()->route('hewan-saya')->with('success', 'Hewan berhasil ditambahkan!');
     }
 
     // ============================
@@ -102,15 +101,13 @@ class PetController extends Controller
             'birth_date'    => 'required|date',
             'weight'        => 'nullable|numeric',
             'special_marks' => 'nullable|string',
-            'is_steril'     => 'nullable|string',
+            'is_steril'     => 'required|boolean',
             'allergies'     => 'nullable|string',
             'health_notes'  => 'nullable|string',
-            'photo'         => 'nullable|image|max:5120'
+            'photo'         => 'nullable|image|max:5120',
         ]);
 
-        // Jika upload foto baru
         if ($request->hasFile('photo')) {
-            // Hapus foto lama jika ada
             if ($pet->photo) {
                 Storage::disk('public')->delete($pet->photo);
             }
@@ -118,7 +115,6 @@ class PetController extends Controller
             $pet->photo = $request->file('photo')->store('pets', 'public');
         }
 
-        // Update field lain
         $pet->update([
             'name'          => $request->name,
             'species'       => $request->species,

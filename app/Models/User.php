@@ -27,6 +27,6 @@ class User extends Authenticatable
     // Relasi ke hewan peliharaan
     public function pets()
     {
-        return $this->hasMany(Pet::class); // Pastikan ada model Pet dan kolom user_id di table pets
+        return $this->hasMany(\App\Models\Pet::class);
     }
 }

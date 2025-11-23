@@ -84,3 +84,25 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+// ==========================================
+// PENGINGAT ROUTES (Require Authentication)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+
+    // List semua pengingat
+    Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
+
+    // Form tambah pengingat
+    Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
+
+    // Simpan pengingat baru
+    Route::post('/pengingat', [PengingatController::class, 'store'])->name('pengingat.store');
+
+    // Tandai selesai
+    Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
+
+    // Hapus
+    Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
+});
+
+

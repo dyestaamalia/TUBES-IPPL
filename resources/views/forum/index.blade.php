@@ -124,13 +124,11 @@
                         {{ Str::limit($comment->content, 200) }}
                     </p>
                     
-                    @if($comment->hashtags)
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        @foreach(explode(',', $comment->hashtags) as $tag)
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-cyan-50 text-cyan-600 hover:bg-cyan-100 transition cursor-pointer">
-                            {{ trim($tag) }}
-                        </span>
-                        @endforeach
+                    @if($comment->image)
+                    <div class="mb-3">
+                        <img src="{{ asset('storage/' . $comment->image) }}" 
+                             alt="Post image"
+                             class="w-full max-h-80 rounded-xl border object-cover">
                     </div>
                     @endif
                 </div>
@@ -227,10 +225,6 @@
                 <ul class="space-y-2 text-sm text-gray-700">
                     <li class="flex items-start gap-2">
                         <span class="text-cyan-500">•</span>
-                        <span>Gunakan hashtag untuk memudahkan pencarian</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-cyan-500">•</span>
                         <span>Jelaskan masalah dengan detail</span>
                     </li>
                     <li class="flex items-start gap-2">
@@ -240,6 +234,10 @@
                     <li class="flex items-start gap-2">
                         <span class="text-cyan-500">•</span>
                         <span>Hormati pendapat pengguna lain</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-cyan-500">•</span>
+                        <span>Berikan judul yang jelas</span>
                     </li>
                 </ul>
             </div>

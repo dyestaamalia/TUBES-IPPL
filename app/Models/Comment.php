@@ -13,7 +13,6 @@ class Comment extends Model
         'user_id',
         'content',
         'title',        // Judul post
-        'hashtags',     // Hashtags (comma separated)
         'image',        // Path gambar
         'parent_id'
     ];
@@ -45,12 +44,13 @@ class Comment extends Model
     }
 
     /**
-     * Balasan komentar
+     * Balasan komentar (NESTED RECURSIVE)
      */
     public function replies(): HasMany
     {
         return $this->hasMany(Comment::class, 'parent_id')
-                    ->with(['user', 'likes']);
+                    ->with(['user', 'likes', 'replies']) // Load nested replies recursively
+                    ->orderBy('created_at', 'asc');
     }
 
     /**
@@ -62,49 +62,16 @@ class Comment extends Model
     }
 
     /**
-     * Get hashtags as array
+     * Count all nested replies recursively
      */
-    public function getHashtagsArrayAttribute()
+    public function getTotalRepliesCountAttribute()
     {
-        return $this->hashtags ? explode(',', $this->hashtags) : [];
-    }
-
-    /**
-     * Sistem Like/Unlike
-     */
-    public function like($id)
-    {
-        try {
-            $comment = Comment::findOrFail($id);
-            $user = auth()->user();
-
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Unauthorized'
-                ], 401);
-            }
-
-            // Toggle like
-            $comment->likes()->toggle($user->id);
-
-            // Reload likes
-            $likesCount = $comment->likes()->count();
-            $isLiked = $comment->likes()->where('user_id', $user->id)->exists();
-
-            return response()->json([
-                'success' => true,
-                'likes_count' => $likesCount,
-                'is_liked' => $isLiked
-            ]);
-
-        } catch (\Exception $e) {
-            \Log::error('Like error: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+        $count = $this->replies->count();
+        
+        foreach ($this->replies as $reply) {
+            $count += $reply->total_replies_count;
         }
+        
+        return $count;
     }
 }

@@ -39,11 +39,6 @@
                           placeholder="Apa yang ingin kamu diskusikan?"
                           required></textarea>
                 
-                <input type="text" 
-                       name="hashtags" 
-                       class="w-full border-0 border-t border-gray-200 focus:border-cyan-500 focus:ring-0 px-0 py-3 text-sm placeholder-gray-400"
-                       placeholder="Tambahkan hashtag: #VaksinAnjing #TipsKesehatan">
-                
                 <div id="imagePreviewContainer" class="hidden mt-4 relative">
                     <img id="imagePreview" src="" class="max-h-96 w-full object-cover rounded-xl border-2 border-gray-200">
                     <button type="button" 
@@ -120,20 +115,10 @@
                 </div>
 
                 @if($comment->image)
-                <div class="px-5 pb-3">
-                    <img src="{{ asset('storage/' . $comment->image) }}" class="w-full max-h-96 rounded-xl border object-cover">
-                </div>
-                @endif
-
-                @if($comment->hashtags)
                 <div class="px-5 pb-4">
-                    <div class="flex flex-wrap gap-2">
-                        @foreach(explode(',', $comment->hashtags) as $tag)
-                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-cyan-50 text-cyan-600">
-                            {{ trim($tag) }}
-                        </span>
-                        @endforeach
-                    </div>
+                    <img src="{{ asset('storage/' . $comment->image) }}" 
+                         alt="Post image"
+                         class="w-full max-h-96 rounded-xl border object-cover">
                 </div>
                 @endif
             </div>

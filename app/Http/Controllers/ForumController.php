@@ -60,15 +60,18 @@ class ForumController extends Controller
     }
 
     /**
-     * SHOW THREAD: 1 comment + semua balasan
+     * SHOW THREAD: 1 comment + semua balasan (NESTED RECURSIVE)
      */
     public function show(Comment $comment)
     {
+        // Load relations recursively
         $comment->load([
             'user',
             'likes',
-            'replies.user',
-            'replies.likes'
+            'replies' => function($query) {
+                $query->with(['user', 'likes', 'replies.user', 'replies.likes'])
+                      ->orderBy('created_at', 'asc');
+            }
         ]);
 
         return view('forum.show', compact('comment'));

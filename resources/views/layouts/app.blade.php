@@ -50,9 +50,10 @@
                 ⏰ Pengingat
             </a>
 
-            <a href="/profil"
+            {{-- UPDATED LINK PROFIL --}}
+            <a href="{{ route('profile.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-xl transition
-               {{ request()->is('profil') 
+               {{ request()->is('profil*') 
                  ? 'bg-[#E5FAF7] text-[#13CAD6] font-semibold border-l-4 border-[#13CAD6]'
                  : 'text-gray-700 hover:bg-gray-100 hover:text-[#1A9C8C]' }}">
                 👤 Profil Saya
@@ -93,11 +94,12 @@
                         onclick="toggleDropdown()"
                     >
 
+                    <!-- UPDATED DROPDOWN -->
                     <div 
                         id="profileDropdown"
                         class="hidden absolute right-0 top-14 w-40 bg-white shadow-lg rounded-xl p-2"
                     >
-                        <a href="/profil" 
+                        <a href="{{ route('profile.index') }}" 
                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                            Profil Saya
                         </a>
@@ -140,7 +142,6 @@
     });
 </script>
 
-{{-- PENTING: Ini untuk load scripts dari child views --}}
 @stack('scripts')
 
 </body>

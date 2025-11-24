@@ -7,6 +7,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\PengingatController;
+use App\Http\Controllers\ProfileController;
+
 
 // ==========================================
 // WELCOME PAGE (Landing Page)
@@ -105,4 +107,20 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
 });
 
+// ==========================================
+// PROFILE ROUTES (Require Authentication)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    // View Profile
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+    
+    // Edit Profile Form
+    Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    
+    // Update Profile
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Update Password
+    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+});
 

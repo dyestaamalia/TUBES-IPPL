@@ -3,20 +3,17 @@
 
 @section('content')
 <style>
-.love-btn, .reply-btn, .share-btn, .toggle-reply-form-btn, .toggle-replies-btn {
+.love-btn, .reply-btn, .share-btn, .toggle-replies-btn {
     transition: all 0.2s ease;
 }
-.love-btn:hover, .reply-btn:hover, .share-btn:hover, .toggle-reply-form-btn:hover, .toggle-replies-btn:hover {
+.love-btn:hover, .reply-btn:hover, .share-btn:hover, .toggle-replies-btn:hover {
     transform: scale(1.05);
 }
-.love-btn:active, .reply-btn:active, .share-btn:active, .toggle-reply-form-btn:active, .toggle-replies-btn:active {
+.love-btn:active, .reply-btn:active, .share-btn:active, .toggle-replies-btn:active {
     transform: scale(0.95);
 }
 .reply-icon {
     transition: transform 0.3s ease;
-}
-#replies-container-{{ $comment->id }} {
-    transition: all 0.3s ease;
 }
 </style>
 
@@ -295,18 +292,29 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.error('Error:', err));
     });
 
-    // === REPLY BUTTON ===
+    // === REPLY BUTTON (Improved) ===
     document.body.addEventListener('click', function(e) {
         const btn = e.target.closest('.reply-btn');
         if (!btn) return;
+
+        e.preventDefault();
+        e.stopPropagation();
 
         const id = btn.dataset.id;
         const form = document.getElementById('reply-form-' + id);
         
         if (form) {
+            const isHidden = form.classList.contains('hidden');
             form.classList.toggle('hidden');
-            if (!form.classList.contains('hidden')) {
-                form.querySelector('textarea').focus();
+            
+            if (isHidden) {
+                const textarea = form.querySelector('textarea');
+                if (textarea) {
+                    setTimeout(() => {
+                        textarea.focus();
+                        form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                }
             }
         }
     });
@@ -321,7 +329,38 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (form) {
             form.classList.add('hidden');
-            form.querySelector('textarea').value = '';
+            const textarea = form.querySelector('textarea');
+            if (textarea) textarea.value = '';
+        }
+    });
+
+    // === TOGGLE REPLIES (EXPAND/COLLAPSE) ===
+    document.body.addEventListener('click', function(e) {
+        const btn = e.target.closest('.toggle-replies-btn');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const container = document.getElementById(`replies-container-${id}`);
+        const icon = btn.querySelector('.reply-icon');
+        const text = btn.querySelector('.reply-text');
+        
+        if (!container || !text) return;
+        
+        const count = text.textContent.match(/\d+/)?.[0] || '0';
+        const isHidden = container.classList.contains('hidden');
+        
+        container.classList.toggle('hidden');
+        
+        if (isHidden) {
+            // Expanding
+            icon.style.transform = 'rotate(-180deg)';
+            text.textContent = `Sembunyikan ${count} balasan`;
+            btn.classList.add('bg-cyan-50');
+        } else {
+            // Collapsing
+            icon.style.transform = 'rotate(0deg)';
+            text.textContent = `Lihat ${count} balasan`;
+            btn.classList.remove('bg-cyan-50');
         }
     });
 

@@ -65,7 +65,7 @@
 
             {{-- Reply Button --}}
             <button type="button"
-                    class="toggle-reply-form-btn flex items-center gap-1.5 text-gray-600 hover:text-blue-500 transition-colors"
+                    class="reply-btn flex items-center gap-1.5 text-gray-600 hover:text-blue-500 transition-colors"
                     data-id="{{ $comment->id }}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
@@ -168,80 +168,32 @@
     </div>
 @endif
 
-{{-- JavaScript untuk Image Preview & Toggle Replies --}}
+{{-- JavaScript untuk Image Preview (hanya dimuat sekali) --}}
+@once
 <script>
 function previewReplyImage(event, commentId) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = e => {
-            document.getElementById(`reply-image-display-${commentId}`).src = e.target.result;
-            document.getElementById(`reply-image-preview-${commentId}`).classList.remove('hidden');
+            const display = document.getElementById(`reply-image-display-${commentId}`);
+            const preview = document.getElementById(`reply-image-preview-${commentId}`);
+            if (display && preview) {
+                display.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
         };
         reader.readAsDataURL(file);
     }
 }
 
 function removeReplyImage(commentId) {
-    document.getElementById(`reply-image-input-${commentId}`).value = '';
-    document.getElementById(`reply-image-preview-${commentId}`).classList.add('hidden');
+    const input = document.getElementById(`reply-image-input-${commentId}`);
+    const preview = document.getElementById(`reply-image-preview-${commentId}`);
+    if (input && preview) {
+        input.value = '';
+        preview.classList.add('hidden');
+    }
 }
-
-// Toggle reply form
-document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.toggle-reply-form-btn');
-    if (!btn) return;
-    
-    const id = btn.dataset.id;
-    const form = document.getElementById(`reply-form-${id}`);
-    if (form) {
-        form.classList.toggle('hidden');
-        if (!form.classList.contains('hidden')) {
-            form.querySelector('textarea').focus();
-        }
-    }
-});
-
-// Cancel reply
-document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.cancel-reply-btn');
-    if (!btn) return;
-    
-    const id = btn.dataset.id;
-    const form = document.getElementById(`reply-form-${id}`);
-    if (form) {
-        form.classList.add('hidden');
-        form.querySelector('textarea').value = '';
-    }
-});
-
-// Toggle replies visibility (COLLAPSE/EXPAND)
-document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.toggle-replies-btn');
-    if (!btn) return;
-    
-    const id = btn.dataset.id;
-    const container = document.getElementById(`replies-container-${id}`);
-    const icon = btn.querySelector('.reply-icon');
-    const text = btn.querySelector('.reply-text');
-    const count = text.textContent.match(/\d+/)[0]; // Extract number
-    
-    if (container) {
-        const isHidden = container.classList.contains('hidden');
-        container.classList.toggle('hidden');
-        
-        // Update icon rotation and text
-        if (isHidden) {
-            // Expanding
-            icon.style.transform = 'rotate(-180deg)';
-            text.textContent = `Sembunyikan ${count} balasan`;
-            btn.classList.add('bg-cyan-50');
-        } else {
-            // Collapsing
-            icon.style.transform = 'rotate(0deg)';
-            text.textContent = `Lihat ${count} balasan`;
-            btn.classList.remove('bg-cyan-50');
-        }
-    }
-});
 </script>
+@endonce

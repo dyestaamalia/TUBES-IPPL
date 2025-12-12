@@ -58,14 +58,22 @@
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
                         <a href="{{ route('profile.show', $comment->user->id ?? 1) }}">
-                            <img src="https://i.pravatar.cc/50?u={{ $comment->user->id }}" 
-                                class="w-12 h-12 rounded-full hover:border-cyan-400 border-2 border-gray-100 transition">
+                            @if($comment->user && $comment->user->profile_photo)
+                                <img src="{{ asset('storage/' . $comment->user->profile_photo) }}" 
+                                     alt="{{ $comment->user->name }}"
+                                     class="w-12 h-12 rounded-full object-cover hover:border-cyan-400 border-2 border-gray-100 transition">
+                            @else
+                                <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'default' }}" 
+                                     alt="{{ $comment->user->name ?? 'User' }}"
+                                     class="w-12 h-12 rounded-full object-cover hover:border-cyan-400 border-2 border-gray-100 transition">
+                            @endif
                         </a>
-                             alt="{{ $comment->user->name }}"
-                             class="w-10 h-10 rounded-full">
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 class="font-semibold text-gray-900">{{ $comment->user->name }}</h3>
+                                <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" 
+                                   class="font-semibold text-gray-900 hover:text-cyan-600 transition">
+                                    {{ $comment->user->name ?? 'Deleted User' }}
+                                </a>
                                 <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
                                     Penulis
                                 </span>
@@ -147,9 +155,15 @@
                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                     
                     <div class="flex gap-2">
-                        <img src="https://i.pravatar.cc/150?u={{ auth()->id() }}" 
-                             alt="You"
-                             class="w-8 h-8 rounded-full flex-shrink-0">
+                        @if(auth()->user()->profile_photo)
+                            <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
+                                 alt="You"
+                                 class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                        @else
+                            <img src="https://i.pravatar.cc/150?u={{ auth()->id() }}" 
+                                 alt="You"
+                                 class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                        @endif
                         <div class="flex-1">
                             <textarea name="content" 
                                       rows="2"

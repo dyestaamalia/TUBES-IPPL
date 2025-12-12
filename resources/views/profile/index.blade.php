@@ -164,7 +164,7 @@
                 
                 {{-- Tab Navigation (X-style) --}}
                 <div class="flex border-b border-gray-200">
-                    <a href="{{ route('profile.index', ['tab' => 'postingan']) }}" 
+                    <a href="{{ $isOwnProfile ? route('profile.index', ['tab' => 'postingan']) : route('profile.show', ['id' => $user->id, 'tab' => 'postingan']) }}" 
                        class="flex-1 text-center py-4 font-semibold transition-all relative
                               {{ $tab === 'postingan' ? 'text-cyan-600' : 'text-gray-600 hover:bg-gray-50' }}">
                         <span class="flex items-center justify-center gap-2">
@@ -178,7 +178,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('profile.index', ['tab' => 'balasan']) }}" 
+                    <a href="{{ $isOwnProfile ? route('profile.index', ['tab' => 'balasan']) : route('profile.show', ['id' => $user->id, 'tab' => 'balasan']) }}" 
                        class="flex-1 text-center py-4 font-semibold transition-all relative
                               {{ $tab === 'balasan' ? 'text-cyan-600' : 'text-gray-600 hover:bg-gray-50' }}">
                         <span class="flex items-center justify-center gap-2">
@@ -192,7 +192,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('profile.index', ['tab' => 'suka']) }}" 
+                    <a href="{{ $isOwnProfile ? route('profile.index', ['tab' => 'suka']) : route('profile.show', ['id' => $user->id, 'tab' => 'suka']) }}" 
                        class="flex-1 text-center py-4 font-semibold transition-all relative
                               {{ $tab === 'suka' ? 'text-cyan-600' : 'text-gray-600 hover:bg-gray-50' }}">
                         <span class="flex items-center justify-center gap-2">
@@ -216,9 +216,20 @@
                         @if($tab === 'balasan' && $item->parent)
                             <div class="mb-3 p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <img src="https://i.pravatar.cc/40?u={{ $item->parent->user->id }}" 
-                                         class="w-6 h-6 rounded-full">
-                                    <p class="text-sm font-semibold text-gray-700">{{ $item->parent->user->name }}</p>
+                                    <a href="{{ route('profile.show', $item->parent->user->id) }}" class="flex-shrink-0">
+                                        @if($item->parent->user && $item->parent->user->profile_photo)
+                                            <img src="{{ asset('storage/' . $item->parent->user->profile_photo) }}" 
+                                                 alt="{{ $item->parent->user->name }}"
+                                                 class="w-6 h-6 rounded-full object-cover hover:ring-2 hover:ring-cyan-400 transition">
+                                        @else
+                                            <img src="https://i.pravatar.cc/40?u={{ $item->parent->user->id }}" 
+                                                 alt="{{ $item->parent->user->name }}"
+                                                 class="w-6 h-6 rounded-full object-cover hover:ring-2 hover:ring-cyan-400 transition">
+                                        @endif
+                                    </a>
+                                    <a href="{{ route('profile.show', $item->parent->user->id) }}" class="text-sm font-semibold text-gray-700 hover:text-cyan-600 transition">
+                                        {{ $item->parent->user->name }}
+                                    </a>
                                     <span class="text-xs text-gray-500">• {{ $item->parent->created_at->diffForHumans() }}</span>
                                 </div>
                                 <p class="text-sm text-gray-600">{{ Str::limit($item->parent->content, 100) }}</p>
@@ -226,12 +237,23 @@
                         @endif
                         
                         <div class="flex items-start gap-3">
-                            <img src="https://i.pravatar.cc/50?u={{ $item->user->id }}" 
-                                 class="w-10 h-10 rounded-full">
+                            <a href="{{ route('profile.show', $item->user->id) }}" class="flex-shrink-0">
+                                @if($item->user && $item->user->profile_photo)
+                                    <img src="{{ asset('storage/' . $item->user->profile_photo) }}" 
+                                         alt="{{ $item->user->name }}"
+                                         class="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-cyan-400 transition">
+                                @else
+                                    <img src="https://i.pravatar.cc/50?u={{ $item->user->id }}" 
+                                         alt="{{ $item->user->name }}"
+                                         class="w-10 h-10 rounded-full object-cover hover:ring-2 hover:ring-cyan-400 transition">
+                                @endif
+                            </a>
                             
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <p class="font-bold text-gray-900">{{ $item->user->name }}</p>
+                                    <a href="{{ route('profile.show', $item->user->id) }}" class="font-bold text-gray-900 hover:text-cyan-600 transition">
+                                        {{ $item->user->name }}
+                                    </a>
                                     <span class="text-gray-400">•</span>
                                     <p class="text-sm text-gray-500">{{ $item->created_at->diffForHumans() }}</p>
                                     

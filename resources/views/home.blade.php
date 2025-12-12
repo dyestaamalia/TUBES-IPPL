@@ -15,8 +15,15 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="p-5 border-b border-gray-100">
                 <div class="flex items-center gap-3">
-                    <img src="https://i.pravatar.cc/50?u={{ auth()->id() }}" 
-                         class="w-12 h-12 rounded-full border-2 border-cyan-200">
+                    @if(auth()->user()->profile_photo)
+                        <img src="{{ asset('storage/' . auth()->user()->profile_photo) }}" 
+                             alt="{{ auth()->user()->name }}"
+                             class="w-12 h-12 rounded-full object-cover border-2 border-cyan-200">
+                    @else
+                        <img src="https://i.pravatar.cc/50?u={{ auth()->id() }}" 
+                             alt="{{ auth()->user()->name }}"
+                             class="w-12 h-12 rounded-full object-cover border-2 border-cyan-200">
+                    @endif
                     <div>
                         <h3 class="font-bold text-gray-900">Tambahkan diskusi</h3>
                         <p class="text-sm text-gray-500">Bagikan pengalamanmu dengan komunitas</p>
@@ -79,8 +86,15 @@
                 <div class="flex items-start justify-between">
                     <div class="flex gap-3">
                         <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" class="flex-shrink-0">
-                            <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'deleted' }}" 
-                                 class="w-12 h-12 rounded-full border-2 border-gray-100 hover:border-cyan-400 transition">
+                            @if($comment->user && $comment->user->profile_photo)
+                                <img src="{{ asset('storage/' . $comment->user->profile_photo) }}" 
+                                     alt="{{ $comment->user->name }}"
+                                     class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 hover:border-cyan-400 transition">
+                            @else
+                                <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'deleted' }}" 
+                                     alt="{{ $comment->user->name ?? 'User' }}"
+                                     class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 hover:border-cyan-400 transition">
+                            @endif
                         </a>
                         <div>
                             <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" 
@@ -376,7 +390,7 @@ document.querySelectorAll('.share-btn').forEach(btn => {
         e.preventDefault();
         e.stopPropagation();
         
-        const url = this.dataset.url;
+        const url = window.location.origin + this.dataset.url;
         const title = this.dataset.title || 'Diskusi IngonCare';
         const textEl = this.querySelector('.share-text');
         const button = this;

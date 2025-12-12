@@ -48,38 +48,41 @@ class AuthController extends Controller
     }
 
     public function prosesRegister(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name'      => 'required|string|max:255',
-            'email'     => 'required|string|email|max:255|unique:users',
-            'phone'     => 'required|unique:users',
-            'password'  => 'required|string|min:8|confirmed',
-            'dob'       => 'required|date',
-        ], [
-            'password.confirmed' => 'Password dan Confirm Password tidak sama!',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'name'      => 'required|string|max:255',
+        'email'     => 'required|string|email|max:255|unique:users',
+        'phone'     => 'required|unique:users',
+        'password'  => [
+            'required',
+            'string',
+            'min:8',                    // minimal 8 karakter
+            'confirmed',
+            'regex:/[A-Z]/',            // harus ada huruf besar
+            'regex:/[0-9]/',            // harus ada angka
+            'regex:/[@$!%*#?&]/',       // karakter spesial
+        ],
+        'dob'       => 'required|date',
+    ], [
+        'password.min'       => 'Password minimal 8 karakter.',
+        'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter spesial.',
+        'password.confirmed' => 'Password dan Confirm Password tidak sama!',
+    ]);
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            if ($errors->has('password') &&
-                strpos($errors->first('password'), 'Confirm Password') !== false) {
-                $errors->add('password_confirmation', $errors->first('password'));
-                $errors->forget('password');
-            }
-            return redirect()->back()->withErrors($errors)->withInput();
-        }
-
-        User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'phone'     => $request->phone,
-            'dob'       => $request->dob,
-            'password'  => Hash::make($request->password),
-        ]);
-
-        return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
     }
+
+    User::create([
+        'name'      => $request->name,
+        'email'     => $request->email,
+        'phone'     => $request->phone,
+        'dob'       => $request->dob,
+        'password'  => Hash::make($request->password),
+    ]);
+
+    return redirect()->route('login')->with('success', 'Akun berhasil dibuat!');
+}
 
     // ================================
     //  LOGOUT
@@ -117,7 +120,7 @@ class AuthController extends Controller
             ['token' => $token, 'created_at' => now()]
         );
 
-        // Untuk sekarang tanpa email, langsung redirect ke form reset
+        // Untuk sementara tanpa email, langsung ke halaman reset
         return redirect()->route('password.reset', $token)
             ->with('success', 'Silakan buat password baru.');
     }
@@ -133,7 +136,18 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'password' => 'required|min:6|confirmed'
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*#?&]/'
+            ]
+        ], [
+            'password.min'       => 'Password minimal 8 karakter.',
+            'password.regex'     => 'Password harus mengandung huruf besar, angka, dan karakter.',
+            'password.confirmed' => 'Password dan Confirm Password tidak sama!',
         ]);
 
         $reset = DB::table('password_reset_tokens')

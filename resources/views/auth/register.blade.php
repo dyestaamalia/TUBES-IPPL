@@ -25,9 +25,9 @@
                 <input type="text" name="name"
                     class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none"
                     placeholder="Full Name" value="{{ old('name') }}">
-                @if ($errors->has('name'))
-                    <p class="text-xs text-red-600 mt-1">{{ $errors->first('name') }}</p>
-                @endif
+                @error('name')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
 
             {{-- Email --}}
@@ -36,9 +36,9 @@
                 <input type="email" name="email"
                     class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none"
                     placeholder="email@gmail.com" value="{{ old('email') }}">
-                @if ($errors->has('email'))
-                    <p class="text-xs text-red-600 mt-1">{{ $errors->first('email') }}</p>
-                @endif
+                @error('email')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
 
             {{-- Password --}}
@@ -47,6 +47,9 @@
                 <input type="password" name="password"
                     class="w-full p-4 bg-[#EAF7FF] rounded-xl focus:outline-none"
                     placeholder="*************">
+                @error('password')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
 
             {{-- Confirm Password --}}
@@ -55,10 +58,10 @@
                 <input type="password" name="password_confirmation"
                     class="w-full p-4 bg-[#EAF7FF] rounded-xl focus:outline-none"
                     placeholder="*************">
+                @error('password_confirmation')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
-            @if ($errors->has('password_confirmation'))
-                <p class="text-xs text-red-600 mt-1">{{ $errors->first('password_confirmation') }}</p>
-            @endif
 
             {{-- Phone --}}
             <label class="block mb-4">
@@ -66,19 +69,20 @@
                 <input type="text" name="phone"
                     class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none"
                     placeholder="08123456789" value="{{ old('phone') }}">
-                @if ($errors->has('phone'))
-                    <p class="text-xs text-red-600 mt-1">{{ $errors->first('phone') }}</p>
-                @endif
+                @error('phone')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
 
             {{-- Date of Birth --}}
             <label class="block mb-4">
                 <span class="text-gray-800 font-semibold text-lg">Date of Birth</span>
                 <input type="date" name="dob"
-                    class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none">
-                @if ($errors->has('dob'))
-                    <p class="text-xs text-red-600 mt-1">{{ $errors->first('dob') }}</p>
-                @endif
+                    class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none"
+                    value="{{ old('dob') }}">
+                @error('dob')
+                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                @enderror
             </label>
 
             {{-- Terms --}}
@@ -95,7 +99,6 @@
             </button>
 
         </form>
-        <!-- FORM REGISTER SELESAI -->
 
         {{-- Login Link --}}
         <p class="text-center text-gray-600 mt-6 mb-10">

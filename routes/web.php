@@ -10,6 +10,7 @@ use App\Http\Controllers\PengingatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\SettingsController;
 
 
 // ==========================================
@@ -39,6 +40,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
+});
+
+// ==========================================
+// SEARCH ROUTE (Require Authentication)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/search', [HomeController::class, 'search'])->name('search');
 });
 
 // ==========================================
@@ -160,3 +168,30 @@ Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
 
+// ==========================================
+// SETTINGS ROUTES (Require Authentication)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    // Main Settings Page
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    
+    // Notifications Settings
+    Route::get('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    
+    // Security Settings
+    Route::get('/settings/security', [SettingsController::class, 'security'])->name('settings.security');
+    Route::put('/settings/security/password', [SettingsController::class, 'updatePassword'])->name('settings.security.password');
+    
+    // Privacy Settings
+    Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
+    
+    // Language Settings
+    Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
+    
+    // Appearance Settings
+    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    
+    // Help & Support
+    Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
+});

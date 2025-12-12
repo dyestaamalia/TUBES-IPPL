@@ -68,16 +68,27 @@
         <!-- HEADER -->
         <header class="flex items-center justify-between px-10 py-6 bg-white shadow-sm relative">
             <div class="w-1/3">
-                <input 
-                    type="text" 
-                    placeholder="Search"
-                    class="w-full px-4 py-2 bg-[#F1F5F9] rounded-full border focus:ring-[#1A9C8C]"
-                >
+                <form action="{{ route('search') }}" method="GET" class="relative">
+                    <input 
+                        type="text" 
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Cari diskusi atau nama pengguna..."
+                        class="w-full px-4 py-2 pr-10 bg-[#F1F5F9] rounded-full border focus:ring-[#1A9C8C] focus:border-[#1A9C8C] focus:outline-none"
+                    >
+                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#1A9C8C] transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </form>
             </div>
 
             <div class="flex items-center gap-6">
                 <span class="text-xl cursor-pointer">🔔</span>
-                <span class="text-xl cursor-pointer">⚙️</span>
+                <a href="{{ route('settings.index') }}" class="text-xl cursor-pointer hover:opacity-70 transition">
+                    ⚙️
+                </a>
 
                 <div class="flex items-center gap-3 relative">
 
@@ -110,7 +121,7 @@
                     <!-- DROPDOWN -->
                     <div 
                         id="profileDropdown"
-                        class="hidden absolute right-0 top-14 w-40 bg-white shadow-lg rounded-xl p-2"
+                        class="hidden absolute right-0 top-14 w-40 bg-white shadow-lg rounded-xl p-2 z-[60]"
                     >
                         <a href="{{ route('profile.index') }}" 
                            class="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">

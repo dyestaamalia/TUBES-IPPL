@@ -89,12 +89,21 @@
                 <div class="p-5 border-b border-gray-50">
                     <div class="flex items-start justify-between">
                         <div class="flex gap-3">
-                            <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'deleted' }}" 
-                                 class="w-12 h-12 rounded-full border-2 border-gray-100">
+                            <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" class="flex-shrink-0">
+                                @if($comment->user && $comment->user->profile_photo)
+                                    <img src="{{ asset('storage/' . $comment->user->profile_photo) }}" 
+                                         alt="{{ $comment->user->name }}"
+                                         class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 hover:border-cyan-400 transition">
+                                @else
+                                    <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'deleted' }}" 
+                                         alt="{{ $comment->user->name ?? 'User' }}"
+                                         class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 hover:border-cyan-400 transition">
+                                @endif
+                            </a>
                             <div>
                                 <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" 
-                                    class="font-bold text-gray-900 hover:text-cyan-600 transition">
-                                        {{ $comment->user->name ?? 'Deleted User' }}
+                                   class="font-bold text-gray-900 hover:text-cyan-600 transition">
+                                    {{ $comment->user->name ?? 'Deleted User' }}
                                 </a>
                                 <p class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
                             </div>

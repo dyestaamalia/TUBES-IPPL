@@ -11,11 +11,33 @@ use Illuminate\Validation\Rules\Password;
 class ProfileController extends Controller
 {
     /**
-     * Tampilkan halaman profil user
+     * Tampilkan halaman profil user dengan tab
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $isOwnProfile = true;
+        
+        return $this->showProfile($user, $request, $isOwnProfile);
+    }
+
+    /**
+     * Tampilkan profil user lain
+     */
+    public function show(Request $request, $id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $isOwnProfile = Auth::id() === $user->id;
+        
+        return $this->showProfile($user, $request, $isOwnProfile);
+    }
+
+    /**
+     * Helper method untuk menampilkan profil
+     */
+    private function showProfile($user, $request, $isOwnProfile)
+    {
+        $tab = $request->get('tab', 'postingan'); // Default: postingan
         
         // Hitung statistik user
         $stats = [
@@ -24,15 +46,38 @@ class ProfileController extends Controller
             'total_likes' => $user->comments()->withCount('likes')->get()->sum('likes_count'),
         ];
         
-        // Ambil postingan terbaru user
-        $recentPosts = $user->comments()
-            ->whereNull('parent_id')
-            ->with(['likes', 'replies'])
-            ->latest()
-            ->limit(5)
-            ->get();
+        // Data berdasarkan tab yang dipilih
+        $content = [];
         
-        return view('profile.index', compact('user', 'stats', 'recentPosts'));
+        switch ($tab) {
+            case 'postingan':
+                // Ambil semua postingan user (parent_id = null)
+                $content = $user->comments()
+                    ->whereNull('parent_id')
+                    ->with(['likes', 'replies', 'user'])
+                    ->latest()
+                    ->paginate(10);
+                break;
+                
+            case 'balasan':
+                // Ambil semua balasan user (parent_id != null)
+                $content = $user->comments()
+                    ->whereNotNull('parent_id')
+                    ->with(['likes', 'replies', 'user', 'parent', 'parent.user'])
+                    ->latest()
+                    ->paginate(10);
+                break;
+                
+            case 'suka':
+                // Ambil semua postingan yang di-like user
+                $content = $user->likes()
+                    ->with(['likes', 'replies', 'user'])
+                    ->latest('comment_user_likes.created_at')
+                    ->paginate(10);
+                break;
+        }
+        
+        return view('profile.index', compact('user', 'stats', 'content', 'tab', 'isOwnProfile'));
     }
 
     /**

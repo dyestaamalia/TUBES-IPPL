@@ -57,7 +57,10 @@
             <div class="p-4 border-b border-gray-100">
                 <div class="flex items-start justify-between">
                     <div class="flex items-center gap-3">
-                        <img src="https://i.pravatar.cc/150?u={{ $comment->user->id }}" 
+                        <a href="{{ route('profile.show', $comment->user->id ?? 1) }}">
+                            <img src="https://i.pravatar.cc/50?u={{ $comment->user->id }}" 
+                                class="w-12 h-12 rounded-full hover:border-cyan-400 border-2 border-gray-100 transition">
+                        </a>
                              alt="{{ $comment->user->name }}"
                              class="w-10 h-10 rounded-full">
                         <div>

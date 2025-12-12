@@ -50,7 +50,7 @@
                 ⏰ Pengingat
             </a>
 
-            {{-- UPDATED LINK PROFIL --}}
+            {{-- LINK PROFIL --}}
             <a href="{{ route('profile.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-xl transition
                {{ request()->is('profil*') 
@@ -87,14 +87,27 @@
                         </span>
                     </p>
 
-                    <img 
-                        id="profileButton"
-                        src="https://i.pravatar.cc/40" 
-                        class="w-10 h-10 rounded-full cursor-pointer"
-                        onclick="toggleDropdown()"
-                    >
+                    @php
+                        $user = Auth::user();
+                    @endphp
 
-                    <!-- UPDATED DROPDOWN -->
+                    @if($user && $user->profile_photo)
+                        <img 
+                            id="profileButton"
+                            src="{{ asset('storage/' . $user->profile_photo) }}" 
+                            class="w-10 h-10 rounded-full cursor-pointer object-cover border-2 border-gray-200"
+                            onclick="toggleDropdown()"
+                        >
+                    @else
+                        <img 
+                            id="profileButton"
+                            src="https://i.pravatar.cc/40?u={{ $user->id ?? 'guest' }}" 
+                            class="w-10 h-10 rounded-full cursor-pointer object-cover"
+                            onclick="toggleDropdown()"
+                        >
+                    @endif
+
+                    <!-- DROPDOWN -->
                     <div 
                         id="profileDropdown"
                         class="hidden absolute right-0 top-14 w-40 bg-white shadow-lg rounded-xl p-2"

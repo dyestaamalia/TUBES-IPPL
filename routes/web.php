@@ -111,8 +111,11 @@ Route::middleware(['auth'])->group(function () {
 // PROFILE ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    // View Profile
+    // View Own Profile
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
+    
+    // View Other User Profile
+    Route::get('/user/{id}', [ProfileController::class, 'show'])->name('profile.show');
     
     // Edit Profile Form
     Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -123,4 +126,3 @@ Route::middleware(['auth'])->group(function () {
     // Update Password
     Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
-

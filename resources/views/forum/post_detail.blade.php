@@ -89,7 +89,7 @@
 
 </div>
 
-{{-- JavaScript untuk interaksi --}}
+{{-- JavaScript tampilan interaksi --}}
 <script>
 document.addEventListener('click', function(e) {
 

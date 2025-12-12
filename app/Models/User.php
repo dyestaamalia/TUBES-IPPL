@@ -30,7 +30,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Relasi ke komentar
+    // Relasi ke komentar yang dibuat user
     public function comments()
     {
         return $this->hasMany(Comment::class);
@@ -40,5 +40,12 @@ class User extends Authenticatable
     public function pets()
     {
         return $this->hasMany(\App\Models\Pet::class);
+    }
+
+    // Relasi ke postingan yang di-like user
+    public function likes()
+    {
+        return $this->belongsToMany(Comment::class, 'comment_user_likes', 'user_id', 'comment_id')
+                    ->withTimestamps();
     }
 }

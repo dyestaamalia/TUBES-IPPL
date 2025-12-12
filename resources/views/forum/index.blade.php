@@ -92,7 +92,10 @@
                             <img src="https://i.pravatar.cc/50?u={{ $comment->user->id ?? 'deleted' }}" 
                                  class="w-12 h-12 rounded-full border-2 border-gray-100">
                             <div>
-                                <p class="font-bold text-gray-900">{{ $comment->user->name ?? 'Deleted User' }}</p>
+                                <a href="{{ route('profile.show', $comment->user->id ?? 1) }}" 
+                                    class="font-bold text-gray-900 hover:text-cyan-600 transition">
+                                        {{ $comment->user->name ?? 'Deleted User' }}
+                                </a>
                                 <p class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</p>
                             </div>
                         </div>

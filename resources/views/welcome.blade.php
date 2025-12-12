@@ -21,13 +21,13 @@
     <!-- Tombol Login -->
     <a href="{{ route('login') }}"
        class="w-48 text-center py-3 bg-[#33E4DB] text-white font-semibold rounded-full shadow-md hover:opacity-90">
-        Log In
+        Masuk
     </a>
 
     <!-- Tombol Sign Up -->
     <a href="{{ route('register') }}"
        class="w-48 text-center py-3 mt-4 bg-[#EAF7FF] text-[#33E4DB] font-semibold rounded-full shadow">
-        Sign Up
+        Daftar
     </a>
 
 </body>

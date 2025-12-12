@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
+    <title>Masuk</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white">
 
     <!-- Header -->
     <div class="w-full bg-[#33E4DB] py-10 flex justify-center">
-        <h1 class="text-white text-4xl font-bold">Log In</h1>
+        <h1 class="text-white text-4xl font-bold">Masuk</h1>
     </div>
 
     <div class="max-w-md mx-auto mt-10 px-5">
@@ -19,44 +19,44 @@
         <form action="{{ route('proseslogin') }}" method="POST">
             @csrf
 
-            {{-- Email or Phone --}}
+            {{-- Email atau Nomor Telepon --}}
             <label class="block mb-3">
-                <span class="text-gray-800 font-semibold text-lg">Email or Mobile Number</span>
+                <span class="text-gray-800 font-semibold text-lg">Email atau Nomor Telepon</span>
                 <input type="text" name="login"
                     class="w-full mt-2 p-4 bg-[#EAF7FF] rounded-xl text-gray-700 focus:outline-none"
-                    placeholder="Email or Mobile Number" value="{{ old('login') }}">
+                    placeholder="Email atau Nomor Telepon" value="{{ old('login') }}">
             </label>
 
-            {{-- Password --}}
+            {{-- Kata Sandi --}}
             <label class="block mb-2">
-                <span class="text-gray-800 font-semibold text-lg">Password</span>
+                <span class="text-gray-800 font-semibold text-lg">Kata Sandi</span>
                 <input type="password" name="password"
                     class="w-full p-4 bg-[#EAF7FF] rounded-xl focus:outline-none"
                     placeholder="************">
             </label>
 
-            {{-- Error Message --}}
+            {{-- Pesan Error --}}
             @if(session('error'))
                 <p class="text-xs text-red-600 mt-1">{{ session('error') }}</p>
             @endif
 
             <div class="text-right mt-1">
                 <a href="{{ route('password.request') }}" class="text-[#33E4DB] text-sm">
-                    Forget Password
+                    Lupa Kata Sandi?
                 </a>
             </div>
 
-            {{-- Login Button --}}
+            {{-- Tombol Masuk --}}
             <button type="submit"
                 class="w-full mt-5 py-3 rounded-full bg-[#33E4DB] text-white text-lg font-semibold">
-                Log In
+                Masuk
             </button>
         </form>
 
-        {{-- Sign Up --}}
+        {{-- Daftar --}}
         <p class="text-center text-gray-600 mt-6 mb-10">
-            Don’t have an account?
-            <a href="{{ route('register') }}" class="text-[#33E4DB] font-semibold">Sign Up</a>
+            Belum punya akun?
+            <a href="{{ route('register') }}" class="text-[#33E4DB] font-semibold">Daftar</a>
         </p>
 
     </div>

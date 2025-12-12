@@ -148,3 +148,15 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showRese
 // Update password baru
 Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])
     ->name('password.update');
+
+// ==========================================
+// LEGAL PAGES ROUTES
+// ==========================================
+Route::get('/terms', function () {
+    return view('legal.terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('legal.privacy');
+})->name('privacy');
+

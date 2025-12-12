@@ -8,6 +8,8 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PetController;
 use App\Http\Controllers\PengingatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 
 
 // ==========================================
@@ -126,3 +128,23 @@ Route::middleware(['auth'])->group(function () {
     // Update Password
     Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
+
+// ==========================================
+// FORGOT PASSWORD ROUTES
+// ==========================================
+
+// Form input email
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
+    ->name('password.request');
+
+// Kirim email reset password
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
+    ->name('password.email');
+
+// Form reset password dari link email
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+// Update password baru
+Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])
+    ->name('password.update');

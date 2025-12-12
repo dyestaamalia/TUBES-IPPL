@@ -41,7 +41,9 @@
             @endif
 
             <div class="text-right mt-1">
-                <a href="#" class="text-[#33E4DB] text-sm">Forget Password</a>
+                <a href="{{ route('password.request') }}" class="text-[#33E4DB] text-sm">
+                    Forget Password
+                </a>
             </div>
 
             {{-- Login Button --}}

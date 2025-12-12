@@ -52,23 +52,15 @@ Route::middleware(['auth'])->group(function () {
 // ==========================================
 // FORUM ROUTES
 // ==========================================
-// Halaman Forum Utama (dengan filter: trending, terbaru, populer)
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
-
-// Detail Thread/Diskusi + Balasan
 Route::get('/forum/{comment}', [ForumController::class, 'show'])->name('forum.show');
 
 // ==========================================
 // COMMENT ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    // Create Comment/Post
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-    
-    // Like/Unlike Comment
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
-    
-    // Delete Comment
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
@@ -76,44 +68,23 @@ Route::middleware(['auth'])->group(function () {
 // PET/HEWAN ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    
-    // List Hewan Milik User
     Route::get('/hewan-saya', [PetController::class, 'index'])->name('hewan-saya');
-    
-    // Create Hewan
     Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
     Route::post('/pets', [PetController::class, 'store'])->name('pets.store');
-    
-    // Detail Hewan
     Route::get('/pets/{pet}', [PetController::class, 'show'])->name('pets.show');
-    
-    // Edit Hewan
     Route::get('/pets/{pet}/edit', [PetController::class, 'edit'])->name('pets.edit');
     Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
-    
-    // Delete Hewan
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
-
 });
 
 // ==========================================
 // PENGINGAT ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-
-    // List semua pengingat
     Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
-
-    // Form tambah pengingat
     Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
-
-    // Simpan pengingat baru
     Route::post('/pengingat', [PengingatController::class, 'store'])->name('pengingat.store');
-
-    // Tandai selesai
     Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
-
-    // Hapus
     Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
 });
 
@@ -121,39 +92,22 @@ Route::middleware(['auth'])->group(function () {
 // PROFILE ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    // View Own Profile
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
-    
-    // View Other User Profile
     Route::get('/user/{id}', [ProfileController::class, 'show'])->name('profile.show');
-    
-    // Edit Profile Form
     Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    
-    // Update Profile
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // Update Password
     Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
 
 // ==========================================
 // FORGOT PASSWORD ROUTES
 // ==========================================
-
-// Form input email
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
     ->name('password.request');
-
-// Kirim email reset password
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
     ->name('password.email');
-
-// Form reset password dari link email
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
     ->name('password.reset');
-
-// Update password baru
 Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])
     ->name('password.update');
 
@@ -185,13 +139,19 @@ Route::middleware(['auth'])->group(function () {
     
     // Privacy Settings
     Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
+    Route::post('/settings/privacy', [SettingsController::class, 'updatePrivacy'])->name('settings.privacy.update');
     
     // Language Settings
     Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
+    Route::post('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.language.update');
     
     // Appearance Settings
     Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    Route::post('/settings/appearance', [SettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
     
     // Help & Support
     Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
+    
+    // Download User Data
+    Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
 });

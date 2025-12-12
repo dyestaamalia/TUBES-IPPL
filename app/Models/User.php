@@ -39,7 +39,7 @@ class User extends Authenticatable
     // Relasi ke hewan peliharaan
     public function pets()
     {
-        return $this->hasMany(\App\Models\Pet::class);
+        return $this->hasMany(Pet::class);
     }
 
     // Relasi ke postingan yang di-like user
@@ -47,5 +47,29 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Comment::class, 'comment_user_likes', 'user_id', 'comment_id')
                     ->withTimestamps();
+    }
+
+    // Relasi ke settings
+    public function settings()
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    /**
+     * Get or create settings - FIXED VERSION
+     */
+    public function getOrCreateSettings()
+    {
+        // Load settings relation jika belum di-load
+        if (!$this->relationLoaded('settings')) {
+            $this->load('settings');
+        }
+
+        // Jika settings masih null, create baru
+        if (is_null($this->settings)) {
+            return $this->settings()->create([]);
+        }
+
+        return $this->settings;
     }
 }

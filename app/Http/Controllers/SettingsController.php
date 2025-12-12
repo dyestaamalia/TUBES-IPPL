@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\UserSetting;
 
 class SettingsController extends Controller
 {
@@ -23,8 +24,8 @@ class SettingsController extends Controller
     public function notifications()
     {
         $user = Auth::user();
-        // Nanti bisa ambil preference notifikasi dari database
-        return view('settings.notifications', compact('user'));
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        return view('settings.notifications', compact('user', 'settings'));
     }
 
     /**
@@ -32,10 +33,20 @@ class SettingsController extends Controller
      */
     public function updateNotifications(Request $request)
     {
-        // Implementasi update notifikasi preferences
-        // Bisa disimpan di tabel user_settings atau di user table
+        $user = Auth::user();
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
         
-        return back()->with('success', 'Pengaturan notifikasi berhasil diperbarui!');
+        $settings->update([
+            'push_enabled' => $request->has('push_enabled'),
+            'notif_likes' => $request->has('notif_likes'),
+            'notif_comments' => $request->has('notif_comments'),
+            'notif_reminders' => $request->has('notif_reminders'),
+            'email_weekly' => $request->has('email_weekly'),
+            'email_tips' => $request->has('email_tips'),
+        ]);
+
+        return redirect()->route('settings.notifications')
+            ->with('success', 'Pengaturan notifikasi berhasil diperbarui!');
     }
 
     /**
@@ -71,7 +82,8 @@ class SettingsController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return back()->with('success', 'Password berhasil diubah!');
+        return redirect()->route('settings.security')
+            ->with('success', 'Password berhasil diubah!');
     }
 
     /**
@@ -80,7 +92,26 @@ class SettingsController extends Controller
     public function privacy()
     {
         $user = Auth::user();
-        return view('settings.privacy', compact('user'));
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        return view('settings.privacy', compact('user', 'settings'));
+    }
+
+    /**
+     * Update Privacy Settings
+     */
+    public function updatePrivacy(Request $request)
+    {
+        $user = Auth::user();
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        
+        $settings->update([
+            'profile_public' => $request->has('profile_public'),
+            'show_email' => $request->has('show_email'),
+            'show_online_status' => $request->has('show_online_status'),
+        ]);
+
+        return redirect()->route('settings.privacy')
+            ->with('success', 'Pengaturan privasi berhasil diperbarui!');
     }
 
     /**
@@ -89,7 +120,28 @@ class SettingsController extends Controller
     public function language()
     {
         $user = Auth::user();
-        return view('settings.language', compact('user'));
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        return view('settings.language', compact('user', 'settings'));
+    }
+
+    /**
+     * Update Language Settings
+     */
+    public function updateLanguage(Request $request)
+    {
+        $request->validate([
+            'language' => 'required|in:id,en,jp'
+        ]);
+
+        $user = Auth::user();
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        
+        $settings->update([
+            'language' => $request->language
+        ]);
+
+        return redirect()->route('settings.language')
+            ->with('success', 'Bahasa berhasil diubah!');
     }
 
     /**
@@ -98,7 +150,30 @@ class SettingsController extends Controller
     public function appearance()
     {
         $user = Auth::user();
-        return view('settings.appearance', compact('user'));
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        return view('settings.appearance', compact('user', 'settings'));
+    }
+
+    /**
+     * Update Appearance Settings
+     */
+    public function updateAppearance(Request $request)
+    {
+        $request->validate([
+            'theme' => 'required|in:light,dark,auto'
+        ]);
+
+        $user = Auth::user();
+        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+        
+        $settings->update([
+            'theme' => $request->theme,
+            'animations_enabled' => $request->has('animations_enabled'),
+            'compact_mode' => $request->has('compact_mode'),
+        ]);
+
+        return redirect()->route('settings.appearance')
+            ->with('success', 'Pengaturan tampilan berhasil diperbarui!');
     }
 
     /**
@@ -108,5 +183,29 @@ class SettingsController extends Controller
     {
         $user = Auth::user();
         return view('settings.help', compact('user'));
+    }
+
+    /**
+     * Download User Data
+     */
+    public function downloadData()
+    {
+        $user = Auth::user();
+        
+        // Compile user data
+        $data = [
+            'user' => $user->toArray(),
+            'pets' => $user->pets->toArray(),
+            'posts' => $user->comments()->whereNull('parent_id')->get()->toArray(),
+            'replies' => $user->comments()->whereNotNull('parent_id')->get()->toArray(),
+            'settings' => $user->settings ? $user->settings->toArray() : [],
+        ];
+
+        $filename = 'ingoncare_data_' . $user->id . '_' . date('Y-m-d') . '.json';
+        
+        return response()->json($data, 200, [
+            'Content-Type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 }

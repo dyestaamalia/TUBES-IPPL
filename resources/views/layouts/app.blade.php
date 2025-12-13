@@ -85,7 +85,21 @@
             </div>
 
             <div class="flex items-center gap-6">
-                <span class="text-xl cursor-pointer">🔔</span>
+                <a href="{{ route('notifications.index') }}" class="relative">
+    🔔
+    @php
+        $count = \App\Models\Notification::where('user_id', auth()->id())
+                    ->where('is_read', false)->count();
+    @endphp
+
+    @if($count > 0)
+    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1 rounded-full">
+        {{ $count }}
+    </span>
+    @endif
+</a>
+
+
                 <a href="{{ route('settings.index') }}" class="text-xl cursor-pointer hover:opacity-70 transition">
                     ⚙️
                 </a>

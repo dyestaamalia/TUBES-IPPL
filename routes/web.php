@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\NotificationController;
 
 
 // ==========================================
@@ -154,4 +155,19 @@ Route::middleware(['auth'])->group(function () {
     
     // Download User Data
     Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
+});
+
+// ==========================================
+// NOTIFICATION ROUTES (Require Authentication)
+// ==========================================
+Route::middleware('auth')->group(function () {
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
+
 });

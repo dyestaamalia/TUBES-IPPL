@@ -11,7 +11,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\RiwayatKesehatanController;
-
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\NotificationController;
 
 // ==========================================
 // WELCOME PAGE (Landing Page)
@@ -43,25 +44,24 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ==========================================
+// SEARCH ROUTE (Require Authentication)
+// ==========================================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/search', [HomeController::class, 'search'])->name('search');
+});
+
+// ==========================================
 // FORUM ROUTES
 // ==========================================
-// Halaman Forum Utama (dengan filter: trending, terbaru, populer)
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
-
-// Detail Thread/Diskusi + Balasan
 Route::get('/forum/{comment}', [ForumController::class, 'show'])->name('forum.show');
 
 // ==========================================
 // COMMENT ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    // Create Comment/Post
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-    
-    // Like/Unlike Comment
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
-    
-    // Delete Comment
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
@@ -69,24 +69,13 @@ Route::middleware(['auth'])->group(function () {
 // PET/HEWAN ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    
-    // List Hewan Milik User
     Route::get('/hewan-saya', [PetController::class, 'index'])->name('hewan-saya');
-    
-    // Create Hewan
     Route::get('/pets/create', [PetController::class, 'create'])->name('pets.create');
     Route::post('/pets', [PetController::class, 'store'])->name('pets.store');
-    
-    // Detail Hewan
     Route::get('/pets/{pet}', [PetController::class, 'show'])->name('pets.show');
-    
-    // Edit Hewan
     Route::get('/pets/{pet}/edit', [PetController::class, 'edit'])->name('pets.edit');
     Route::put('/pets/{pet}', [PetController::class, 'update'])->name('pets.update');
-    
-    // Delete Hewan
     Route::delete('/pets/{pet}', [PetController::class, 'destroy'])->name('pets.destroy');
-
 });
 
 // ==========================================
@@ -94,53 +83,61 @@ Route::middleware(['auth'])->group(function () {
 // ==========================================
 Route::middleware(['auth'])->group(function () {
     Route::resource('riwayat', RiwayatKesehatanController::class);
-    Route::get('/riwayat', [RiwayatKesehatanController::class, 'index'])->name('riwayat'); // ← ubah ini
+    Route::get('/riwayat', [RiwayatKesehatanController::class, 'index'])->name('riwayat');
     Route::get('/riwayat/create', [RiwayatKesehatanController::class, 'create'])->name('riwayat.create');
     Route::post('/riwayat', [RiwayatKesehatanController::class, 'store'])->name('riwayat.store');
     Route::get('/riwayat/{id}/edit', [RiwayatKesehatanController::class, 'edit'])->name('riwayat.edit');
     Route::put('/riwayat/{id}', [RiwayatKesehatanController::class, 'update'])->name('riwayat.update');
     Route::delete('/riwayat/{id}', [RiwayatKesehatanController::class, 'destroy'])->name('riwayat.destroy');
+
+    // PENGINGAT
+    Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
+    Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
+    Route::post('/pengingat', [PengingatController::class, 'store'])->name('pengingat.store');
+    Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
+    Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
+
+    // SETTINGS
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::get('/settings/security', [SettingsController::class, 'security'])->name('settings.security');
+    Route::put('/settings/security/password', [SettingsController::class, 'updatePassword'])->name('settings.security.password');
+    Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
+    Route::post('/settings/privacy', [SettingsController::class, 'updatePrivacy'])->name('settings.privacy.update');
+    Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
+    Route::post('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.language.update');
+    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    Route::post('/settings/appearance', [SettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
+    Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
+    Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
+
+    // NOTIFICATIONS
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
 });
 
 // ==========================================
 // PROFILE ROUTES (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    // View Own Profile
     Route::get('/profil', [ProfileController::class, 'index'])->name('profile.index');
-    
-    // View Other User Profile
     Route::get('/user/{id}', [ProfileController::class, 'show'])->name('profile.show');
-    
-    // Edit Profile Form
     Route::get('/profil/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    
-    // Update Profile
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
-    
-    // Update Password
     Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
 
 // ==========================================
 // FORGOT PASSWORD ROUTES
 // ==========================================
-
-// Form input email
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
-    ->name('password.request');
-
-// Kirim email reset password
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
-    ->name('password.email');
-
-// Form reset password dari link email
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-
-// Update password baru
-Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])
-    ->name('password.update');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
 
 // ==========================================
 // LEGAL PAGES ROUTES
@@ -152,6 +149,3 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
-
-
-

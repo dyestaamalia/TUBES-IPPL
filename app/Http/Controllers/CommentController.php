@@ -4,68 +4,94 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CommentController extends Controller
 {
     /**
-     * Simpan post/komentar baru dengan title, image (support nested replies)
+     * ===============================
+     * SIMPAN KOMENTAR / BALASAN
+     * + NOTIFIKASI KOMENTAR
+     * ===============================
      */
     public function store(Request $request)
     {
         $request->validate([
-            'content' => 'required|string|max:1000',
-            'title' => 'nullable|string|max:100',
+            'content'   => 'required|string|max:1000',
+            'title'     => 'nullable|string|max:100',
             'parent_id' => 'nullable|exists:comments,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            'image'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        // Handle image upload
+        // Upload image
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('comments', 'public');
         }
 
-        Comment::create([
-            'user_id' => Auth::id(),
-            'content' => $request->content,
-            'title' => $request->title,
-            'image' => $imagePath,
-            'parent_id' => $request->parent_id ?? null,
+        // Simpan komentar
+        $comment = Comment::create([
+            'user_id'   => Auth::id(),
+            'content'   => $request->content,
+            'title'     => $request->title,
+            'image'     => $imagePath,
+            'parent_id' => $request->parent_id,
         ]);
 
-        // Redirect sesuai context
+        /**
+         * ===============================
+         * NOTIFIKASI KOMENTAR
+         * ===============================
+         */
+
+        // 🔹 BALASAN KOMENTAR
         if ($request->parent_id) {
-            // Cari root parent untuk redirect
             $parent = Comment::find($request->parent_id);
-            $rootId = $parent->parent_id ?? $parent->id;
-            
-            return redirect()->route('forum.show', $rootId)
+
+            if ($parent && $parent->user_id !== Auth::id()) {
+                Notification::create([
+                    'user_id' => $parent->user_id,
+                    'type'    => 'comment',
+                    'title'   => 'Balasan Komentar',
+                    'message' => Auth::user()->name . ' membalas komentar Anda',
+                    'link'    => '/forum/' . ($parent->parent_id ?? $parent->id),
+                    'is_read' => false,
+                ]);
+            }
+
+            return redirect()
+                ->route('forum.show', $parent->parent_id ?? $parent->id)
                 ->with('success', 'Balasan berhasil ditambahkan!');
+        }
+
+        // 🔹 KOMENTAR BARU DI FORUM
+        if ($comment->user_id !== Auth::id()) {
+            Notification::create([
+                'user_id' => $comment->user_id,
+                'type'    => 'comment',
+                'title'   => 'Komentar Baru',
+                'message' => Auth::user()->name . ' mengomentari forum Anda',
+                'link'    => '/forum/' . $comment->id,
+                'is_read' => false,
+            ]);
         }
 
         return back()->with('success', 'Diskusi berhasil diposting!');
     }
 
     /**
-     * Like / Unlike komentar
+     * ===============================
+     * LIKE / UNLIKE KOMENTAR
+     * + NOTIFIKASI LIKE
+     * ===============================
      */
     public function like($id)
     {
         try {
-            \Log::info('Like request received for comment: ' . $id);
-            
             $comment = Comment::findOrFail($id);
-            $user = auth()->user();
-
-            if (!$user) {
-                \Log::error('User not authenticated');
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Unauthorized'
-                ], 401);
-            }
+            $user = Auth::user();
 
             // Toggle like
             if ($comment->likes()->where('user_id', $user->id)->exists()) {
@@ -74,40 +100,56 @@ class CommentController extends Controller
             } else {
                 $comment->likes()->attach($user->id);
                 $isLiked = true;
+
+                /**
+                 * NOTIFIKASI LIKE
+                 */
+                // Tentukan pemilik forum utama
+                if ($comment->parent_id) {
+                    $root = Comment::find($comment->parent_id);
+                    $ownerId = $root->user_id;
+                    $linkId  = $root->id;
+                } else {
+                    $ownerId = $comment->user_id;
+                    $linkId  = $comment->id;
+                }
+
+                // Jangan notif diri sendiri
+                if ($ownerId !== $user->id) {
+                    Notification::create([
+                        'user_id' => $ownerId,
+                        'type'    => 'like',
+                        'title'   => 'Like Forum',
+                        'message' => $user->name . ' menyukai postingan Anda',
+                        'link'    => '/forum/' . $linkId,
+                        'is_read' => false,
+                    ]);
+                }
             }
 
-            // Reload likes count
-            $likesCount = $comment->likes()->count();
-            
-            \Log::info('Like toggled successfully', [
-                'likes_count' => $likesCount,
-                'is_liked' => $isLiked
-            ]);
-
             return response()->json([
-                'success' => true,
-                'likes_count' => $likesCount,
-                'is_liked' => $isLiked
+                'success'     => true,
+                'likes_count' => $comment->likes()->count(),
+                'is_liked'    => $isLiked,
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Like error: ' . $e->getMessage());
-            
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Hapus post/komentar
+     * ===============================
+     * HAPUS KOMENTAR
+     * ===============================
      */
     public function destroy($id)
     {
         $comment = Comment::findOrFail($id);
 
-        // Authorization check
         if ($comment->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -115,12 +157,6 @@ class CommentController extends Controller
             ], 403);
         }
 
-        // Delete image if exists
-        if ($comment->image) {
-            Storage::disk('public')->delete($comment->image);
-        }
-
-        // Delete all replies (cascade) - RECURSIVE
         $this->deleteCommentAndReplies($comment);
 
         return response()->json([
@@ -130,24 +166,20 @@ class CommentController extends Controller
     }
 
     /**
-     * Helper: Delete comment and all its nested replies recursively
+     * ===============================
+     * HAPUS KOMENTAR & BALASAN
+     * ===============================
      */
     private function deleteCommentAndReplies($comment)
     {
-        // Get all direct replies
-        $replies = Comment::where('parent_id', $comment->id)->get();
-        
-        // Recursively delete each reply
-        foreach ($replies as $reply) {
+        foreach (Comment::where('parent_id', $comment->id)->get() as $reply) {
             $this->deleteCommentAndReplies($reply);
         }
-        
-        // Delete image if exists
+
         if ($comment->image) {
             Storage::disk('public')->delete($comment->image);
         }
-        
-        // Delete the comment itself
+
         $comment->delete();
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\PengingatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\RiwayatKesehatanController;
 
 
 // ==========================================
@@ -89,24 +90,16 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ==========================================
-// PENGINGAT ROUTES (Require Authentication)
+// RIWAYAT KESEHATAN HEWAN (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-
-    // List semua pengingat
-    Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
-
-    // Form tambah pengingat
-    Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
-
-    // Simpan pengingat baru
-    Route::post('/pengingat', [PengingatController::class, 'store'])->name('pengingat.store');
-
-    // Tandai selesai
-    Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
-
-    // Hapus
-    Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
+    Route::resource('riwayat', RiwayatKesehatanController::class);
+    Route::get('/riwayat', [RiwayatKesehatanController::class, 'index'])->name('riwayat'); // ← ubah ini
+    Route::get('/riwayat/create', [RiwayatKesehatanController::class, 'create'])->name('riwayat.create');
+    Route::post('/riwayat', [RiwayatKesehatanController::class, 'store'])->name('riwayat.store');
+    Route::get('/riwayat/{id}/edit', [RiwayatKesehatanController::class, 'edit'])->name('riwayat.edit');
+    Route::put('/riwayat/{id}', [RiwayatKesehatanController::class, 'update'])->name('riwayat.update');
+    Route::delete('/riwayat/{id}', [RiwayatKesehatanController::class, 'destroy'])->name('riwayat.destroy');
 });
 
 // ==========================================
@@ -159,4 +152,6 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
+
+
 

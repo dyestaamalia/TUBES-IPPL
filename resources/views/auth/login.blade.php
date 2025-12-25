@@ -6,7 +6,12 @@
     <title>Masuk</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white">
+<body class="bg-white relative">
+
+    <!-- LOGO KIRI ATAS -->
+    <a href="{{ route('welcome') }}" class="absolute top-3 left-4 z-50">
+        <img src="/img/header.png" alt="logo" class="w-20 cursor-pointer hover:scale-105 transition">
+    </a>
 
     <!-- Header -->
     <div class="w-full bg-[#33E4DB] py-10 flex justify-center">

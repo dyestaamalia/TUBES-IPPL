@@ -10,9 +10,9 @@ use App\Http\Controllers\PengingatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\RiwayatKesehatanController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
-
 
 // ==========================================
 // WELCOME PAGE (Landing Page)
@@ -79,14 +79,45 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ==========================================
-// PENGINGAT ROUTES (Require Authentication)
+// RIWAYAT KESEHATAN HEWAN (Require Authentication)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
+    Route::resource('riwayat', RiwayatKesehatanController::class);
+    Route::get('/riwayat', [RiwayatKesehatanController::class, 'index'])->name('riwayat');
+    Route::get('/riwayat/create', [RiwayatKesehatanController::class, 'create'])->name('riwayat.create');
+    Route::post('/riwayat', [RiwayatKesehatanController::class, 'store'])->name('riwayat.store');
+    Route::get('/riwayat/{id}/edit', [RiwayatKesehatanController::class, 'edit'])->name('riwayat.edit');
+    Route::put('/riwayat/{id}', [RiwayatKesehatanController::class, 'update'])->name('riwayat.update');
+    Route::delete('/riwayat/{id}', [RiwayatKesehatanController::class, 'destroy'])->name('riwayat.destroy');
+
+    // PENGINGAT
     Route::get('/pengingat', [PengingatController::class, 'index'])->name('pengingat.list');
     Route::get('/pengingat/create', [PengingatController::class, 'create'])->name('pengingat.create');
     Route::post('/pengingat', [PengingatController::class, 'store'])->name('pengingat.store');
     Route::post('/pengingat/{id}/selesai', [PengingatController::class, 'selesai'])->name('pengingat.selesai');
     Route::delete('/pengingat/{id}', [PengingatController::class, 'delete'])->name('pengingat.delete');
+
+    // SETTINGS
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
+    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
+    Route::get('/settings/security', [SettingsController::class, 'security'])->name('settings.security');
+    Route::put('/settings/security/password', [SettingsController::class, 'updatePassword'])->name('settings.security.password');
+    Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
+    Route::post('/settings/privacy', [SettingsController::class, 'updatePrivacy'])->name('settings.privacy.update');
+    Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
+    Route::post('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.language.update');
+    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
+    Route::post('/settings/appearance', [SettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
+    Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
+    Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
+
+    // NOTIFICATIONS
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
+    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
 });
 
 // ==========================================
@@ -103,14 +134,10 @@ Route::middleware(['auth'])->group(function () {
 // ==========================================
 // FORGOT PASSWORD ROUTES
 // ==========================================
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
-    ->name('password.request');
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
-    ->name('password.email');
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
-Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])
-    ->name('password.update');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
 
 // ==========================================
 // LEGAL PAGES ROUTES
@@ -122,52 +149,3 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
-
-// ==========================================
-// SETTINGS ROUTES (Require Authentication)
-// ==========================================
-Route::middleware(['auth'])->group(function () {
-    // Main Settings Page
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    
-    // Notifications Settings
-    Route::get('/settings/notifications', [SettingsController::class, 'notifications'])->name('settings.notifications');
-    Route::post('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.notifications.update');
-    
-    // Security Settings
-    Route::get('/settings/security', [SettingsController::class, 'security'])->name('settings.security');
-    Route::put('/settings/security/password', [SettingsController::class, 'updatePassword'])->name('settings.security.password');
-    
-    // Privacy Settings
-    Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
-    Route::post('/settings/privacy', [SettingsController::class, 'updatePrivacy'])->name('settings.privacy.update');
-    
-    // Language Settings
-    Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
-    Route::post('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.language.update');
-    
-    // Appearance Settings
-    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
-    Route::post('/settings/appearance', [SettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
-    
-    // Help & Support
-    Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
-    
-    // Download User Data
-    Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
-});
-
-// ==========================================
-// NOTIFICATION ROUTES (Require Authentication)
-// ==========================================
-Route::middleware('auth')->group(function () {
-
-    Route::get('/notifications', [NotificationController::class, 'index'])
-        ->name('notifications.index');
-
-    Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-    Route::delete('/notifications/{id}', [NotificationController::class, 'delete']);
-    Route::delete('/notifications', [NotificationController::class, 'deleteAll']);
-
-});

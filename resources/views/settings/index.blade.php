@@ -103,47 +103,6 @@
             </svg>
         </a>
 
-        {{-- Bahasa --}}
-        <a href="{{ route('settings.language') }}" 
-           class="flex items-center justify-between p-5 hover:bg-cyan-50 transition border-b border-gray-100 group">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-gray-900">Bahasa</h3>
-                    <p class="text-sm text-gray-500">Pilih bahasa aplikasi</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-500">Bahasa Indonesia</span>
-                <svg class="w-5 h-5 text-gray-400 group-hover:text-cyan-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </div>
-        </a>
-
-        {{-- Tampilan --}}
-        <a href="{{ route('settings.appearance') }}" 
-           class="flex items-center justify-between p-5 hover:bg-cyan-50 transition border-b border-gray-100 group">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-gray-900">Tampilan</h3>
-                    <p class="text-sm text-gray-500">Sesuaikan tema dan tampilan</p>
-                </div>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 group-hover:text-cyan-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </a>
-
         {{-- Bantuan & Dukungan --}}
         <a href="{{ route('settings.help') }}" 
            class="flex items-center justify-between p-5 hover:bg-cyan-50 transition border-b border-gray-100 group">
@@ -163,27 +122,6 @@
             </svg>
         </a>
 
-        {{-- Divider --}}
-        <div class="border-t-4 border-gray-100"></div>
-
-        {{-- Tambahkan Akun --}}
-        <button onclick="alert('Fitur tambah akun akan segera hadir!')" 
-                class="flex items-center justify-between p-5 hover:bg-red-50 transition w-full text-left group">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="font-semibold text-red-600">Tambahkan Akun</h3>
-                    <p class="text-sm text-gray-500">Kelola multiple akun</p>
-                </div>
-            </div>
-            <svg class="w-5 h-5 text-gray-400 group-hover:text-red-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
 
         {{-- Keluar --}}
         <form action="{{ route('logout') }}" method="POST">

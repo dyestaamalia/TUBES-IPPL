@@ -75,47 +75,6 @@
         {{-- Left Column - Stats & Info --}}
         <div class="space-y-6">
 
-            {{-- Statistics Card --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-5 py-4 border-b border-purple-100">
-                    <h3 class="font-bold text-lg flex items-center gap-2">
-                        <span>📊</span> Statistik Aktivitas
-                    </h3>
-                </div>
-                
-                <div class="p-5 space-y-4">
-                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white">
-                                📝
-                            </div>
-                            <span class="text-gray-700 font-medium">Postingan</span>
-                        </div>
-                        <span class="text-2xl font-bold text-blue-600">{{ $stats['total_posts'] }}</span>
-                    </div>
-
-                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white">
-                                💬
-                            </div>
-                            <span class="text-gray-700 font-medium">Balasan</span>
-                        </div>
-                        <span class="text-2xl font-bold text-green-600">{{ $stats['total_replies'] }}</span>
-                    </div>
-
-                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white">
-                                ❤️
-                            </div>
-                            <span class="text-gray-700 font-medium">Total Likes</span>
-                        </div>
-                        <span class="text-2xl font-bold text-red-600">{{ $stats['total_likes'] }}</span>
-                    </div>
-                </div>
-            </div>
-
             {{-- Personal Information Card --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-cyan-50 to-blue-50 px-5 py-4 border-b border-cyan-100">

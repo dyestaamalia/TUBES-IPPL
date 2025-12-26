@@ -105,13 +105,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/settings/security/password', [SettingsController::class, 'updatePassword'])->name('settings.security.password');
     Route::get('/settings/privacy', [SettingsController::class, 'privacy'])->name('settings.privacy');
     Route::post('/settings/privacy', [SettingsController::class, 'updatePrivacy'])->name('settings.privacy.update');
-    Route::get('/settings/language', [SettingsController::class, 'language'])->name('settings.language');
-    Route::post('/settings/language', [SettingsController::class, 'updateLanguage'])->name('settings.language.update');
-    Route::get('/settings/appearance', [SettingsController::class, 'appearance'])->name('settings.appearance');
-    Route::post('/settings/appearance', [SettingsController::class, 'updateAppearance'])->name('settings.appearance.update');
     Route::get('/settings/help', [SettingsController::class, 'help'])->name('settings.help');
     Route::get('/settings/download-data', [SettingsController::class, 'downloadData'])->name('settings.download.data');
-
+    Route::get('/settings/account', [SettingsController::class, 'account'])->name('settings.account');
+    Route::post('/settings/account', [SettingsController::class, 'updateAccount'])->name('settings.account.update');
     // NOTIFICATIONS
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read/{id}', [NotificationController::class, 'markRead']);

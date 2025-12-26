@@ -443,8 +443,7 @@
                             setTimeout(() => {
                                 element.remove();
                                 if (id == '{{ $comment->id }}') {
-                                    window.location.href = '{{ route('
-                                    home ') }}';
+                                    window.location.href = '{{ route('home') }}';
                                 }
                             }, 300);
                         }

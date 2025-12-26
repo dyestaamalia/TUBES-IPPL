@@ -117,66 +117,8 @@ class SettingsController extends Controller
     /**
      * Halaman Bahasa
      */
-    public function language()
-    {
-        $user = Auth::user();
-        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
-        return view('settings.language', compact('user', 'settings'));
-    }
-
-    /**
-     * Update Language Settings
-     */
-    public function updateLanguage(Request $request)
-    {
-        $request->validate([
-            'language' => 'required|in:id,en,jp'
-        ]);
-
-        $user = Auth::user();
-        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
-        
-        $settings->update([
-            'language' => $request->language
-        ]);
-
-        return redirect()->route('settings.language')
-            ->with('success', 'Bahasa berhasil diubah!');
-    }
-
-    /**
-     * Halaman Tampilan
-     */
-    public function appearance()
-    {
-        $user = Auth::user();
-        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
-        return view('settings.appearance', compact('user', 'settings'));
-    }
-
-    /**
-     * Update Appearance Settings
-     */
-    public function updateAppearance(Request $request)
-    {
-        $request->validate([
-            'theme' => 'required|in:light,dark,auto'
-        ]);
-
-        $user = Auth::user();
-        $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
-        
-        $settings->update([
-            'theme' => $request->theme,
-            'animations_enabled' => $request->has('animations_enabled'),
-            'compact_mode' => $request->has('compact_mode'),
-        ]);
-
-        return redirect()->route('settings.appearance')
-            ->with('success', 'Pengaturan tampilan berhasil diperbarui!');
-    }
-
-    /**
+    
+       /**
      * Halaman Bantuan & Dukungan
      */
     public function help()
@@ -208,4 +150,37 @@ class SettingsController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
+
+    /**
+ * Halaman Akun
+ */
+        public function account()
+        {
+            $user = Auth::user();
+            $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
+            return view('settings.account', compact('user', 'settings'));
+        }
+
+        /**
+         * Update Account Settings
+         */
+        public function updateAccount(Request $request)
+        {
+            $user = Auth::user();
+            
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone' => 'required|unique:users,phone,' . $user->id,
+            ]);
+
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+            ]);
+
+            return redirect()->route('settings.account')
+                ->with('success', 'Informasi akun berhasil diperbarui!');
+        }
 }

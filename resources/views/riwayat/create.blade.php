@@ -17,83 +17,65 @@
     </div>
 
     <!-- Form -->
-    <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8 max-w-3xl">
+    <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
         
         <form action="{{ route('riwayat.store') }}" method="POST">
             @csrf
 
-            <!-- Nama Hewan -->
+            <!-- ✅ PILIH HEWAN (DROPDOWN) -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Nama Hewan Peliharaan <span class="text-red-500">*</span>
+                    Pilih Hewan Peliharaan <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="nama_hewan" value="{{ old('nama_hewan') }}" required placeholder="Contoh: Meng, Selow, Kuki" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('nama_hewan') border-red-500 @enderror">
-                @error('nama_hewan')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                
+                @if($pets->isEmpty())
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                        <p class="text-yellow-800 text-sm">
+                            ⚠️ Anda belum memiliki hewan peliharaan terdaftar. 
+                            <a href="{{ route('pets.create') }}" class="font-semibold underline">Daftar hewan dulu</a>
+                        </p>
+                    </div>
+                @else
+                    <select name="pet_id" id="pet_id" required 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('pet_id') border-red-500 @enderror"
+                            onchange="fillPetData()">
+                        <option value="">-- Pilih Hewan --</option>
+                        @foreach($pets as $pet)
+                            <option value="{{ $pet->id }}" 
+                                    data-name="{{ $pet->name }}"
+                                    data-species="{{ $pet->species }}"
+                                    data-breed="{{ $pet->breed }}"
+                                    data-gender="{{ $pet->gender }}"
+                                    data-age="{{ $pet->age }}">
+                                {{ $pet->name }} - {{ $pet->species }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('pet_id')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                @endif
             </div>
 
-            <!-- ✅ SPESIES (BARU) -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Spesies <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="spesies" value="{{ old('spesies') }}" required placeholder="Contoh: Kucing Persia, Anjing Golden Retriever, Kura-kura Brazil" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('spesies') border-red-500 @enderror">
-                @error('spesies')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Jenis Hewan -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Jenis Hewan <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="jenis_hewan" value="{{ old('jenis_hewan') }}" required placeholder="Contoh: Kucing, Anjing, Kura-kura" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('jenis_hewan') border-red-500 @enderror">
-                @error('jenis_hewan')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Jenis Kelamin -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Jenis Kelamin <span class="text-red-500">*</span>
-                </label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin" value="Jantan" {{ old('jenis_kelamin') == 'Jantan' ? 'checked' : '' }} required class="w-4 h-4 text-[#4EC4CE] focus:ring-[#4EC4CE]">
-                        <span class="text-gray-700">Jantan</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="radio" name="jenis_kelamin" value="Betina" {{ old('jenis_kelamin') == 'Betina' ? 'checked' : '' }} required class="w-4 h-4 text-[#4EC4CE] focus:ring-[#4EC4CE]">
-                        <span class="text-gray-700">Betina</span>
-                    </label>
-                </div>
-                @error('jenis_kelamin')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- ✅ UMUR (BARU) -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Umur Hewan
-                </label>
-                <div class="grid grid-cols-2 gap-4">
+            <!-- ✅ INFO HEWAN (Auto-fill, Read-only) -->
+            <div id="pet-info" class="hidden mb-6 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
+                <h3 class="font-semibold text-gray-800 mb-3">📋 Informasi Hewan</h3>
+                <div class="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                        <input type="number" name="umur" value="{{ old('umur', 0) }}" min="0" placeholder="Tahun" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('umur') border-red-500 @enderror">
-                        <p class="text-gray-500 text-xs mt-1">Tahun</p>
-                        @error('umur')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <p class="text-gray-600">Nama:</p>
+                        <p id="info-name" class="font-semibold">-</p>
                     </div>
                     <div>
-                        <input type="number" name="umur_bulan" value="{{ old('umur_bulan', 0) }}" min="0" max="11" placeholder="Bulan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4EC4CE] focus:border-transparent @error('umur_bulan') border-red-500 @enderror">
-                        <p class="text-gray-500 text-xs mt-1">Bulan (0-11)</p>
-                        @error('umur_bulan')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <p class="text-gray-600">Spesies/Ras:</p>
+                        <p id="info-species" class="font-semibold">-</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Jenis Kelamin:</p>
+                        <p id="info-gender" class="font-semibold">-</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Umur:</p>
+                        <p id="info-age" class="font-semibold">-</p>
                     </div>
                 </div>
             </div>
@@ -183,5 +165,26 @@
 
 <!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script>
+function fillPetData() {
+    const select = document.getElementById('pet_id');
+    const option = select.options[select.selectedIndex];
+    const petInfo = document.getElementById('pet-info');
+    
+    if (option.value) {
+        // Show & Fill Info
+        petInfo.classList.remove('hidden');
+        document.getElementById('info-name').textContent = option.dataset.name || '-';
+        document.getElementById('info-species').textContent = 
+            (option.dataset.species || '-') + (option.dataset.breed ? ' (' + option.dataset.breed + ')' : '');
+        document.getElementById('info-gender').textContent = option.dataset.gender || '-';
+        document.getElementById('info-age').textContent = option.dataset.age || '-';
+    } else {
+        // Hide if no selection
+        petInfo.classList.add('hidden');
+    }
+}
+</script>
 
 @endsection

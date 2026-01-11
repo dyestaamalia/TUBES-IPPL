@@ -23,37 +23,31 @@
 
     <!-- STATISTIK -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Total Pemeriksaan -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div class="relative z-10">
                 <p class="text-sm text-gray-500 mb-2">Total Pemeriksaan</p>
                 <p class="text-3xl font-bold text-gray-800">{{ $totalPemeriksaan }}</p>
             </div>
-            <!-- Paw Image -->
             <div class="absolute right-5 bottom-5 opacity-50">
                 <img src="{{ asset('img/paw.png') }}" alt="" class="w-7 h-7 object-contain">
             </div>
         </div>
 
-        <!-- Hewan Diperiksa -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div class="relative z-10">
                 <p class="text-sm text-gray-500 mb-2">Hewan Diperiksa</p>
                 <p class="text-3xl font-bold text-gray-800">{{ $hewanDiperiksa }}</p>
             </div>
-            <!-- Paw Image -->
             <div class="absolute right-5 bottom-5 opacity-50">
                 <img src="{{ asset('img/paw.png') }}" alt="" class="w-7 h-7 object-contain">
             </div>
         </div>
 
-        <!-- Bulan Ini -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
             <div class="relative z-10">
                 <p class="text-sm text-gray-500 mb-2">Bulan Ini</p>
                 <p class="text-3xl font-bold text-gray-800">{{ $bulanIni }}</p>
             </div>
-            <!-- Paw Image -->
             <div class="absolute right-5 bottom-5 opacity-50">
                 <img src="{{ asset('img/paw.png') }}" alt="" class="w-7 h-7 object-contain">
             </div>
@@ -69,6 +63,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             @foreach ($riwayats as $riwayat)
+                @php
+                    $pet = $riwayat->pet; // ✅ Ambil data hewan dari relasi
+                @endphp
+                
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
 
                     <!-- HEADER CARD dengan Background Warna -->
@@ -77,13 +75,13 @@
                             <div class="flex gap-4 items-center">
                                 <!-- Icon Hewan -->
                                 <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-3xl">
-                                    @if(strtolower($riwayat->jenis_hewan) == 'kucing')
+                                    @if($pet && strtolower($pet->species) == 'kucing')
                                         🐱
-                                    @elseif(strtolower($riwayat->jenis_hewan) == 'anjing')
+                                    @elseif($pet && strtolower($pet->species) == 'anjing')
                                         🐶
-                                    @elseif(strtolower($riwayat->jenis_hewan) == 'kelinci')
+                                    @elseif($pet && strtolower($pet->species) == 'kelinci')
                                         🐰
-                                    @elseif(strtolower($riwayat->jenis_hewan) == 'burung')
+                                    @elseif($pet && strtolower($pet->species) == 'burung')
                                         🦜
                                     @else
                                         🐾
@@ -92,23 +90,26 @@
 
                                 <div>
                                     <h3 class="font-bold text-lg text-gray-800 leading-tight">
-                                        {{ $riwayat->nama_hewan }}
+                                        {{ $pet ? $pet->name : 'Hewan Dihapus' }}
                                     </h3>
                                     <p class="text-sm text-gray-600 mt-0.5">
-                                        {{ $riwayat->jenis_hewan }} - {{ $riwayat->spesies ?? 'Tidak diketahui' }}
+                                        {{ $pet ? $pet->species : '-' }} 
+                                        @if($pet && $pet->breed) - {{ $pet->breed }} @endif
                                     </p>
                                     <div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                                        <!-- Icon Gender -->
-                                        <div class="flex items-center gap-1">
-                                            @if(strtolower($riwayat->jenis_kelamin) == 'jantan' || strtolower($riwayat->jenis_kelamin) == 'male')
-                                                <img src="{{ asset('img/male.png') }}" alt="" class="w-3 h-3 object-contain">
-                                            @else
-                                                <img src="{{ asset('img/female.png') }}" alt="" class="w-3 h-3 object-contain">
-                                            @endif
-                                            <span>{{ $riwayat->jenis_kelamin }}</span>
-                                        </div>
-                                        <!-- Umur -->
-                                        <span>• {{ $riwayat->umur ?? '0' }} Tahun {{ $riwayat->umur_bulan ?? '0' }} Bulan</span>
+                                        @if($pet)
+                                            <!-- Icon Gender -->
+                                            <div class="flex items-center gap-1">
+                                                @if(strtolower($pet->gender) == 'jantan' || strtolower($pet->gender) == 'male')
+                                                    <img src="{{ asset('img/male.png') }}" alt="" class="w-3 h-3 object-contain">
+                                                @else
+                                                    <img src="{{ asset('img/female.png') }}" alt="" class="w-3 h-3 object-contain">
+                                                @endif
+                                                <span>{{ $pet->gender }}</span>
+                                            </div>
+                                            <!-- Umur -->
+                                            <span>• {{ $pet->age ?? '0 tahun' }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -117,7 +118,6 @@
                             <div class="flex gap-2">
                                 <a href="{{ route('riwayat.edit', $riwayat->id) }}"
                                    class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/50 transition">
-                                    <!-- GAMBAR EDIT -->
                                     <img src="{{ asset('img/edit.png') }}" alt="" class="w-5 h-5 object-contain">
                                 </a>
 
@@ -127,7 +127,6 @@
                                     @csrf
                                     @method('DELETE')
                                     <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/50 transition">
-                                        <!-- GAMBAR DELETE -->
                                         <img src="{{ asset('img/delete.png') }}" alt="" class="w-5 h-5 object-contain">
                                     </button>
                                 </form>
@@ -136,7 +135,6 @@
 
                         <!-- TANGGAL -->
                         <div class="mt-4 flex items-center gap-2 text-sm text-gray-600 bg-white/60 px-3 py-2 rounded-lg inline-flex">
-                            <!-- GAMBAR KALENDER -->
                             <img src="{{ asset('img/calendar.png') }}" alt="" class="w-6 h-6 object-contain">
                             {{ \Carbon\Carbon::parse($riwayat->tanggal_pemeriksaan)->format('d F Y') }}
                         </div>
@@ -147,7 +145,6 @@
                         <!-- Diagnosis -->
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                <!-- GAMBAR DIAGNOSIS -->
                                 <img src="{{ asset('img/diagnosa.png') }}" alt="" class="w-7 h-7 object-contain">
                             </div>
                             <div class="flex-1 min-w-0">
@@ -159,7 +156,6 @@
                         <!-- Tindakan -->
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center flex-shrink-0">
-                                <!-- GAMBAR TINDAKAN -->
                                 <img src="{{ asset('img/tindakan.png') }}" alt="" class="w-7 h-7 object-contain">
                             </div>
                             <div class="flex-1 min-w-0">
@@ -171,7 +167,6 @@
                         <!-- Dokter -->
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center flex-shrink-0">
-                                <!-- GAMBAR DOKTER -->
                                 <img src="{{ asset('img/dokter.png') }}" alt="" class="w-7 h-7 object-contain">
                             </div>
                             <div class="flex-1 min-w-0">
@@ -183,7 +178,6 @@
                         <!-- Catatan -->
                         <div class="flex items-start gap-3">
                             <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
-                                <!-- GAMBAR CATATAN -->
                                 <img src="{{ asset('img/catatan.png') }}" alt="" class="w-7 h-7 object-contain">
                             </div>
                             <div class="flex-1 min-w-0">
@@ -198,7 +192,6 @@
                         <div class="bg-blue-50 px-6 py-4 border-t border-blue-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center flex-shrink-0">
-                                    <!-- GAMBAR JAM/CLOCK -->
                                     <img src="{{ asset('img/Info.png') }}" alt="" class="w-7 h-7 object-contain brightness-0 invert">
                                 </div>
                                 <div>

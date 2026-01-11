@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\RiwayatKesehatan;
+use App\Models\Pet;
 use Carbon\Carbon;
 
 class RiwayatKesehatanController extends Controller
@@ -11,13 +12,14 @@ class RiwayatKesehatanController extends Controller
     public function index()
     {
         $riwayats = RiwayatKesehatan::where('user_id', auth()->id())
+            ->with('pet') // ✅ Load relasi pet
             ->orderBy('tanggal_pemeriksaan', 'desc')
             ->get();
 
         return view('riwayat.kesehatan', [
             'riwayats' => $riwayats,
             'totalPemeriksaan' => $riwayats->count(),
-            'hewanDiperiksa' => $riwayats->pluck('nama_hewan')->unique()->count(),
+            'hewanDiperiksa' => $riwayats->pluck('pet_id')->unique()->count(),
             'bulanIni' => $riwayats->filter(function ($item) {
                 return Carbon::parse($item->tanggal_pemeriksaan)->isCurrentMonth();
             })->count(),
@@ -26,18 +28,16 @@ class RiwayatKesehatanController extends Controller
 
     public function create()
     {
-        return view('riwayat.create');
+        // ✅ Ambil semua hewan milik user yang login
+        $pets = Pet::where('user_id', auth()->id())->get();
+        
+        return view('riwayat.create', compact('pets'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_hewan' => 'required|string|max:255',
-            'spesies' => 'required|string|max:255', 
-            'jenis_hewan' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'umur' => 'nullable|integer|min:0', 
-            'umur_bulan' => 'nullable|integer|min:0|max:11', 
+            'pet_id' => 'required|exists:pets,id', // ✅ Validasi pet_id
             'tanggal_pemeriksaan' => 'required|date',
             'diagnosis' => 'required|string|max:255',
             'tindakan' => 'required|string',
@@ -60,20 +60,18 @@ class RiwayatKesehatanController extends Controller
     {
         $riwayat = RiwayatKesehatan::where('id', $id)
             ->where('user_id', auth()->id())
+            ->with('pet')
             ->firstOrFail();
 
-        return view('riwayat.edit', compact('riwayat'));
+        $pets = Pet::where('user_id', auth()->id())->get();
+
+        return view('riwayat.edit', compact('riwayat', 'pets'));
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'nama_hewan' => 'required|string|max:255',
-            'spesies' => 'required|string|max:255', 
-            'jenis_hewan' => 'required|string|max:255',
-            'jenis_kelamin' => 'required|in:Jantan,Betina',
-            'umur' => 'nullable|integer|min:0', 
-            'umur_bulan' => 'nullable|integer|min:0|max:11', 
+            'pet_id' => 'required|exists:pets,id',
             'tanggal_pemeriksaan' => 'required|date',
             'diagnosis' => 'required|string|max:255',
             'tindakan' => 'required|string',

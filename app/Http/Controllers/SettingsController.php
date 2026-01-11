@@ -151,36 +151,4 @@ class SettingsController extends Controller
         ]);
     }
 
-    /**
- * Halaman Akun
- */
-        public function account()
-        {
-            $user = Auth::user();
-            $settings = $user->settings ?? UserSetting::create(['user_id' => $user->id]);
-            return view('settings.account', compact('user', 'settings'));
-        }
-
-        /**
-         * Update Account Settings
-         */
-        public function updateAccount(Request $request)
-        {
-            $user = Auth::user();
-            
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'phone' => 'required|unique:users,phone,' . $user->id,
-            ]);
-
-            $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ]);
-
-            return redirect()->route('settings.account')
-                ->with('success', 'Informasi akun berhasil diperbarui!');
-        }
 }

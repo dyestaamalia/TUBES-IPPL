@@ -34,7 +34,6 @@ class Pet extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Accessor untuk umur
     public function getAgeAttribute()
     {
         if (!$this->birth_date) {

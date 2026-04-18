@@ -13,6 +13,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\RiwayatKesehatanController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChatbotController;
 
 // ==========================================
 // WELCOME PAGE (Landing Page)
@@ -146,3 +147,8 @@ Route::get('/terms', function () {
 Route::get('/privacy', function () {
     return view('legal.privacy');
 })->name('privacy');
+
+Route::get('/chatbot', [ChatbotController::class, 'index'])->name('chatbot.index');
+Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
+Route::get('/chatbot/history', [ChatbotController::class, 'history'])->name('chatbot.history');
+Route::get('/chatbot/new', [ChatbotController::class, 'newSession'])->name('chatbot.new-session');

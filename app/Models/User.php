@@ -30,13 +30,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Relasi ke komentar yang dibuat user
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
 
-    // Relasi ke hewan peliharaan
     public function pets()
     {
         return $this->hasMany(Pet::class);

@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PetController extends Controller
 {
-    // ============================
-    // 1. LIST HEWAN MILIK USER
-    // ============================
     public function index(Request $request)
     {
         $user = $request->user();
@@ -21,17 +18,11 @@ class PetController extends Controller
         return view('pets.hewan_saya', compact('pets', 'totalHewan'));
     }
 
-    // ============================
-    // 2. FORM CREATE
-    // ============================
     public function create()
     {
         return view('pets.create');
     }
 
-    // ============================
-    // 3. PROSES SIMPAN
-    // ============================
     public function store(Request $request)
     {
         $request->validate([
@@ -69,28 +60,20 @@ class PetController extends Controller
             'photo'         => $photoPath,
         ]);
 
-        return redirect()->route('hewan-saya')->with('success', 'Hewan berhasil ditambahkan!');
+        return redirect()->route('hewan-saya')
+            ->with('success', 'Hewan berhasil ditambahkan!');
     }
 
-    // ============================
-    // 4. DETAIL
-    // ============================
     public function show(Pet $pet)
     {
         return view('pets.show', compact('pet'));
     }
 
-    // ============================
-    // 5. FORM EDIT
-    // ============================
     public function edit(Pet $pet)
     {
         return view('pets.edit', compact('pet'));
     }
 
-    // ============================
-    // 6. PROSES UPDATE
-    // ============================
     public function update(Request $request, Pet $pet)
     {
         $request->validate([
@@ -128,12 +111,10 @@ class PetController extends Controller
             'health_notes'  => $request->health_notes,
         ]);
 
-        return redirect()->route('hewan-saya')->with('success', 'Data hewan berhasil diperbarui!');
+        return redirect()->route('hewan-saya')
+            ->with('success', 'Data hewan berhasil diperbarui!');
     }
 
-    // ============================
-    // 7. HAPUS
-    // ============================
     public function destroy(Pet $pet)
     {
         if ($pet->photo) {
@@ -142,6 +123,7 @@ class PetController extends Controller
 
         $pet->delete();
 
-        return redirect()->route('hewan-saya')->with('success', 'Hewan berhasil dihapus!');
+        return redirect()->route('hewan-saya')
+            ->with('success', 'Hewan berhasil dihapus!');
     }
 }

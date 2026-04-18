@@ -10,8 +10,8 @@ class PengingatController extends Controller
     public function index()
     {
         return view('pengingat.pengingat_list', [
-            'aktif' => Pengingat::where('status', 'aktif')->get(),
-            'selesai' => Pengingat::where('status', 'selesai')->get(),
+            'aktif'   => Pengingat::where('user_id', auth()->id())->where('status', 'aktif')->get(),
+            'selesai' => Pengingat::where('user_id', auth()->id())->where('status', 'selesai')->get(),
         ]);
     }
 
@@ -22,31 +22,36 @@ class PengingatController extends Controller
 
     public function store(Request $req)
     {
-        Pengingat::create([
-            'nama_hewan' => $req->nama_hewan,
-            'kategori' => $req->kategori,
-            'tanggal' => $req->tanggal,
-            'waktu' => $req->waktu,
-            'deskripsi' => $req->deskripsi,
-            'status' => 'aktif'
+        $req->validate([
+            'nama_hewan' => 'required|string|max:255',
+            'kategori'   => 'required|string|max:255',
+            'tanggal'    => 'required|date',
+            'waktu'      => 'required',
+            'deskripsi'  => 'nullable|string',
         ]);
 
-        return redirect()->route('pengingat.list');
+        Pengingat::create([
+            'user_id'    => auth()->id(),
+            'nama_hewan' => $req->nama_hewan,
+            'kategori'   => $req->kategori,
+            'tanggal'    => $req->tanggal,
+            'waktu'      => $req->waktu,
+            'deskripsi'  => $req->deskripsi,
+            'status'     => 'aktif',
+        ]);
+
+        return redirect()->route('pengingat.list')->with('success', 'Pengingat berhasil ditambahkan!');
     }
 
     public function selesai($id)
     {
-        Pengingat::find($id)->update([
-            'status' => 'selesai'
-        ]);
-
-        return back();
+        Pengingat::where('id', $id)->where('user_id', auth()->id())->update(['status' => 'selesai']);
+        return back()->with('success', 'Pengingat ditandai selesai!');
     }
 
     public function delete($id)
     {
-        Pengingat::find($id)->delete();
-
-        return back();
+        Pengingat::where('id', $id)->where('user_id', auth()->id())->delete();
+        return back()->with('success', 'Pengingat berhasil dihapus!');
     }
 }

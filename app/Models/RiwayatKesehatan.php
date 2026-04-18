@@ -11,12 +11,7 @@ class RiwayatKesehatan extends Model
 
     protected $fillable = [
         'user_id',
-        'nama_hewan',
-        'spesies',          
-        'jenis_hewan',
-        'jenis_kelamin',
-        'umur',             
-        'umur_bulan',      
+        'pet_id',
         'tanggal_pemeriksaan',
         'diagnosis',
         'tindakan',
@@ -28,8 +23,6 @@ class RiwayatKesehatan extends Model
     protected $casts = [
         'tanggal_pemeriksaan' => 'date',
         'jadwal_berikutnya' => 'date',
-        'umur' => 'integer',        
-        'umur_bulan' => 'integer',  
     ];
 
     public function user()
@@ -37,11 +30,8 @@ class RiwayatKesehatan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getUmurLengkapAttribute()
+    public function pet()
     {
-        $tahun = $this->umur > 0 ? $this->umur . ' tahun' : '';
-        $bulan = $this->umur_bulan > 0 ? $this->umur_bulan . ' bulan' : '';
-        
-        return trim($tahun . ' ' . $bulan) ?: '0 tahun';
+        return $this->belongsTo(Pet::class);
     }
 }

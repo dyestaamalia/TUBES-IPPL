@@ -60,6 +60,14 @@
                     👤 Profil Saya
                 </a>
 
+                <a href="{{ route('chatbot.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition
+                    {{ request()->is('chatbot*') 
+                    ? 'bg-[#E5FAF7] text-[#13CAD6] font-semibold border-l-4 border-[#13CAD6]' 
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-[#1A9C8C]' }}">
+                    🤖 Chatbot AI
+                </a>
+
             </nav>
         </aside>
 
